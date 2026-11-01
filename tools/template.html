@@ -603,7 +603,7 @@ function fillThumbs(){
 /* ---------- search ---------- */
 // Normalise hamza/ta-marbuta/tashkeel variants on both sides so Arabic queries match loosely.
 function norm(s){
-  return s.replace(/[\u0640\u064B-\u065F\u0670​-‏\uFFFD]/g,'')
+  return s.replace(/[\u0640\u064B-\u065F\u0670\u200B-\u200F\uFFFD]/g,'')
     .replace(/[أإآٱ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/ؤ/g,'و').replace(/ئ/g,'ي')
     .replace(/[^\p{L}\p{N}]/gu,'').toLowerCase();
 }
