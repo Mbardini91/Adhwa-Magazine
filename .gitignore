@@ -4,3 +4,4 @@ node_modules/
 .DS_Store
 firebase-debug.log
 firestore-debug.log
+__pycache__/

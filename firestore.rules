@@ -1,25 +1,24 @@
 rules_version = '2';
 
 // مجلة أضواء — قواعد أمان الإعجابات
-// كل قارئ (حساب مجهول) يملك وثيقة واحدة فقط لكل موضوع: topics/{topicId}/likes/{uid}
-// لا توجد أي بيانات شخصية؛ فقط وقت الإعجاب.
+// المسار: issues/{issueId}/topics/{topicId}/likes/{uid}
+// كل قارئ (حساب مجهول) يملك وثيقة واحدة فقط لكل موضوع في كل عدد.
+// لا توجد أي بيانات شخصية؛ فقط وقت الإعجاب. القواعد عامة، فلا تحتاج تعديلاً مع كل عدد جديد.
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function validTopic(t) {
-      return t in ['ceo-word','events','departments','outstanding','twin-fame','inspiring',
-                   'spotlight','here-there','zanzibar','severance','calendar','memories',
-                   'our-table','legal','positive','world-cup','channels'];
+    function validId(s) {
+      return s is string && s.matches('^[a-z0-9-]{1,32}$');
     }
 
-    match /topics/{topicId}/likes/{uid} {
+    match /issues/{issueId}/topics/{topicId}/likes/{uid} {
       // قراءة العدد (count) متاحة للجميع
-      allow read: if validTopic(topicId);
+      allow read: if validId(issueId) && validId(topicId);
 
-      // إعجاب: فقط باسم المستخدم نفسه، ومرة واحدة، وبحقل وقت فقط
+      // إعجاب: فقط باسم المستخدم نفسه، مرة واحدة، وبحقل الوقت فقط
       allow create: if request.auth != null
                     && request.auth.uid == uid
-                    && validTopic(topicId)
+                    && validId(issueId) && validId(topicId)
                     && request.resource.data.keys().hasOnly(['at'])
                     && request.resource.data.at == request.time;
 

@@ -8,7 +8,7 @@
     "cleanUrls": true,
     "headers": [
       {
-        "source": "**/*.@(webp|jpg|png|woff2)",
+        "source": "**/*.@(webp|jpg|png|woff2|pdf)",
         "headers": [
           {
             "key": "Cache-Control",
