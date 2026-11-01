@@ -1033,7 +1033,7 @@ const Sound = (() => {
    ========================================================= */
 const TTS = window.TTS = (() => {
   const synth = window.speechSynthesis;
-  const strip = s => s.replace(/[ً-ٰٟـ​-‏�]/g, '').replace(/^[\[\]]+|[\[\]]+$/g, '');
+  const strip = s => s.replace(/[\u064B-\u065F\u0670\u0640\u200B-\u200F\uFFFD]/g, '').replace(/^[\[\]]+|[\[\]]+$/g, '');
   let voice = null, rate = 1, active = false, playing = false, pos = {n: 1, i: 0}, token = 0, ttsNav = false, cache = {};
   try{ rate = +localStorage.getItem('adwaa-rate') || 1; }catch(e){}
   function pickVoice(){
