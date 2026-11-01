@@ -2,7 +2,13 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="أضواء">
+<link rel="apple-touch-icon" href="icon-180.png">
 <title>أضواء | __ISSUE_TITLE__</title>
 <meta name="description" content="مجلة أضواء – مجلة ربع سنوية داخلية تصدر عن هيئة تنظيم سوق العمل، مملكة البحرين. __ISSUE_TITLE__.">
 <meta property="og:type" content="website">
@@ -59,7 +65,11 @@ svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.6;stroke
 
 /* top bar */
 .top{position:fixed;inset:0 0 auto 0;height:var(--bar);display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:20}
-.brand{display:flex;align-items:baseline;gap:14px}
+.brand{display:flex;align-items:center;gap:12px;padding:4px 4px 4px 10px;margin-right:-4px;border-radius:14px;transition:background .2s}
+.brand:hover{background:rgba(255,255,255,.06)}
+.brand .hm{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--glass);border:1px solid var(--line);transition:background .2s,border-color .2s}
+.brand:hover .hm{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2)}
+.brand:active .hm{transform:scale(.94)}
 .brand b{font-weight:600;font-size:22px;letter-spacing:.5px}
 .brand span{font-size:12.5px;color:var(--mute);font-weight:400}
 .tools{display:flex;gap:6px}
@@ -248,26 +258,36 @@ body.listening .page{cursor:pointer}
 .player.paused .eq i{animation-play-state:paused;opacity:.4}
 @keyframes eq{0%,100%{height:25%}50%{height:100%}}
 
+
+/* ---------- full screen (immersive) ---------- */
+#bFull .fs-out{display:none}
+body.immersive #bFull .fs-in{display:none}
+body.immersive #bFull .fs-out{display:block}
+body.ochrome .top{padding-top:env(safe-area-inset-top);height:calc(52px + env(safe-area-inset-top))}
+body.ochrome .foot{padding-bottom:env(safe-area-inset-bottom);height:calc(52px + env(safe-area-inset-bottom))}
+body.ochrome .brand .hm{width:36px;height:36px}
+.top{padding-top:env(safe-area-inset-top)}
+
 /* ---------- touch devices ---------- */
 @media (hover:none),(pointer:coarse){ .nav{display:none} }
 
 /* ---------- compact landscape (phone on its side) ---------- */
-body.compact{--bar:0px;--foot:0px}
-body.compact .stage{top:0;bottom:0}
-body.compact .top,body.compact .foot{height:52px;transition:transform .35s cubic-bezier(.3,.7,.2,1),opacity .35s}
-body.compact .top{background:linear-gradient(rgba(8,16,36,.92),rgba(8,16,36,0))}
-body.compact .foot{background:linear-gradient(rgba(8,16,36,0),rgba(8,16,36,.92))}
-body.compact.chrome-off .top{transform:translateY(-100%);opacity:0}
-body.compact.chrome-off .foot{transform:translateY(100%);opacity:0}
-body.compact .player{bottom:60px}
-body.compact.chrome-off .player{bottom:10px}
-body.compact .hint{display:none}
-body.compact .brand span{display:none}
-body.compact .ab.lis span,body.compact .ab.cap span{display:none}
-body.compact .navg input[type=range]{display:none}
-body.compact .top .ib,body.compact .ab{height:36px;min-width:36px;width:auto}
-body.compact .top .ib{width:36px}
-body.compact .capbar{height:52px}
+body.ochrome{--bar:0px;--foot:0px}
+body.ochrome .stage{top:0;bottom:0}
+body.ochrome .top,body.ochrome .foot{height:52px;transition:transform .35s cubic-bezier(.3,.7,.2,1),opacity .35s}
+body.ochrome .top{background:linear-gradient(rgba(8,16,36,.92),rgba(8,16,36,0))}
+body.ochrome .foot{background:linear-gradient(rgba(8,16,36,0),rgba(8,16,36,.92))}
+body.ochrome.chrome-off .top{transform:translateY(-100%);opacity:0}
+body.ochrome.chrome-off .foot{transform:translateY(100%);opacity:0}
+body.ochrome .player{bottom:60px}
+body.ochrome.chrome-off .player{bottom:10px}
+body.ochrome .hint{display:none}
+body.ochrome .brand span{display:none}
+body.ochrome .ab.lis span,body.ochrome .ab.cap span{display:none}
+body.ochrome .navg input[type=range]{display:none}
+body.ochrome .top .ib,body.ochrome .ab{height:36px;min-width:36px;width:auto}
+body.ochrome .top .ib{width:36px}
+body.ochrome .capbar{height:52px}
 
 @media (max-width:1100px){ .tp .tt{max-width:130px} .navg input[type=range]{width:min(260px,26vw)} }
 @media (max-width:760px){
@@ -280,7 +300,9 @@ body.compact .capbar{height:52px}
   .ab{height:38px;min-width:38px;padding:0 9px}
   .ab.cap span{display:none}
   .ab.lis span{display:none}
-  #bLinks,#bFull{display:none}
+  #bLinks{display:none}
+  .brand b{display:none}
+  .brand .hm{width:36px;height:36px;border-radius:11px}
   .tools{gap:5px}
   .top .ib{width:36px;height:36px}
   .ab.lis{height:36px;min-width:36px;padding:0}
@@ -306,7 +328,7 @@ body.compact .capbar{height:52px}
 <div class="loader" id="loader"><div>أضواء</div></div>
 
 <header class="top">
-  <div class="brand"><b>أضواء</b><span>__ISSUE_LABEL__</span></div>
+  <button class="brand" id="bHome" title="العودة للغلاف" aria-label="العودة لغلاف المجلة"><i class="hm"><svg viewBox="0 0 24 24"><path d="M4 11.5 12 5l8 6.5"/><path d="M6.5 10v9h4v-5h3v5h4v-9"/></svg></i><b>أضواء</b><span>__ISSUE_LABEL__</span></button>
   <div class="tools">
     <button class="ab lis" id="bListen" title="استمع للمجلة" aria-label="استمع للمجلة"><svg viewBox="0 0 24 24"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3.5" y="14" width="4" height="6" rx="1.5"/><rect x="16.5" y="14" width="4" height="6" rx="1.5"/></svg><span>استمع</span></button>
     <button class="ib" id="bSound" title="صوت التقليب" aria-label="صوت التقليب" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="w1" d="M15.5 9a4 4 0 0 1 0 6"/><path class="w2" d="M18 6.5a7.5 7.5 0 0 1 0 11"/><path class="mx" d="M16 9.5l5 5M21 9.5l-5 5"/></svg></button>
@@ -315,7 +337,7 @@ body.compact .capbar{height:52px}
     <button class="ib" id="bThumbs" title="كل الصفحات" aria-label="كل الصفحات"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg></button>
     <button class="ib" id="bLinks" title="إظهار الروابط" aria-label="إظهار الروابط"><svg viewBox="0 0 24 24"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></svg></button>
     <button class="ib" id="bZoom" title="تكبير" aria-label="تكبير"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/></svg></button>
-    <button class="ib" id="bFull" title="ملء الشاشة" aria-label="ملء الشاشة"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+    <button class="ib" id="bFull" title="ملء الشاشة" aria-label="ملء الشاشة"><svg viewBox="0 0 24 24" class="fs-in"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><svg viewBox="0 0 24 24" class="fs-out"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>
   </div>
 </header>
 
@@ -455,19 +477,21 @@ function buildBook(){
 
 const TOUCH = matchMedia('(hover: none), (pointer: coarse)').matches;
 function setCompact(){
-  // short landscape screens (phones on their side): full-bleed book, auto-hiding chrome
-  const c = innerHeight < 560 && innerWidth > innerHeight, was = document.body.classList.contains('compact');
-  document.body.classList.toggle('compact', c);
-  if (c && !was && window.wakeChrome) setTimeout(wakeChrome, 0);
-  if (!c) document.body.classList.remove('chrome-off');
-  return c;
+  // short landscape screens (phones on their side) and full screen: full-bleed book, auto-hiding chrome
+  const B = document.body, c = innerHeight < 560 && innerWidth > innerHeight;
+  const o = c || B.classList.contains('immersive'), was = B.classList.contains('ochrome');
+  B.classList.toggle('compact', c); B.classList.toggle('ochrome', o);
+  if (o && !was && window.wakeChrome) setTimeout(wakeChrome, 0);
+  if (!o) B.classList.remove('chrome-off');
+  return o;
 }
 function layout(){
   const compact = setCompact();
   const st = $('#stage').getBoundingClientRect();
   const portrait = st.width < st.height * 1.02 || st.width < 560;
-  const sidePad = portrait ? 24 : (compact || TOUCH ? 24 : 150);
-  const availW = st.width - sidePad, availH = st.height - (compact ? 12 : 30);
+  const imm = document.body.classList.contains('immersive');
+  const sidePad = portrait ? (imm ? 0 : 24) : (compact || TOUCH ? 24 : 150);
+  const availW = st.width - sidePad, availH = st.height - (imm ? 0 : compact ? 12 : 30);
   let pw = portrait ? Math.min(availW, availH / RATIO) : Math.min(availW / 2, availH / RATIO);
   pw = Math.floor(pw); const ph = Math.floor(pw * RATIO);
   return {portrait, pw, ph, key: (portrait ? 'p' : 'l') + Math.round(pw / 6)};
@@ -700,9 +724,35 @@ document.addEventListener('dblclick', e => { if (e.target.closest('#book')) open
 })();
 
 /* ---------- fullscreen ---------- */
-$('#bFull').onclick = async () => {
-  try{ if (!document.fullscreenElement) await document.documentElement.requestFullscreen(); else await document.exitFullscreen(); }catch(e){}
+// Real full screen where the browser allows it (desktop, Android, iPad); on iPhone the same
+// button gives an immersive view: bars hide, the magazine takes the whole screen.
+const FS = {
+  get el(){ return document.fullscreenElement || document.webkitFullscreenElement; },
+  req(){ const d = document.documentElement, f = d.requestFullscreen || d.webkitRequestFullscreen; if (!f) return Promise.resolve(false);
+         try{ return Promise.resolve(f.call(d, {navigationUI: 'hide'})).then(() => true, () => false); }catch(e){ return Promise.resolve(false); } },
+  exit(){ const f = document.exitFullscreen || document.webkitExitFullscreen; if (this.el && f) try{ Promise.resolve(f.call(document)).catch(() => {}); }catch(e){} }
 };
+const STANDALONE = matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || navigator.standalone;
+let fsTipShown = false;
+function setImmersive(on){
+  const B = document.body; if (B.classList.contains('immersive') === on) return;
+  B.classList.toggle('immersive', on);
+  const b = $('#bFull'); b.classList.toggle('on', on); b.title = on ? 'الخروج من ملء الشاشة' : 'ملء الشاشة'; b.setAttribute('aria-label', b.title);
+  if (on){
+    FS.req().then(ok => {
+      if (!ok && !STANDALONE && /iPhone|iPod/.test(navigator.userAgent) && !fsTipShown){ fsTipShown = true; setTimeout(() => toast('لعرض بدون أشرطة سفاري: زر المشاركة ← «إضافة إلى الشاشة الرئيسية»'), 600); }
+    });
+  } else FS.exit();
+  setCompact(); dispatchEvent(new Event('resize'));
+}
+$('#bFull').onclick = () => setImmersive(!document.body.classList.contains('immersive'));
+['fullscreenchange','webkitfullscreenchange'].forEach(ev => document.addEventListener(ev, () => {
+  if (FS.el) setImmersive(true);            // entered (e.g. F11 or our button)
+  else setImmersive(false);                 // left with Esc / system gesture
+}));
+
+/* ---------- home: back to the cover ---------- */
+$('#bHome').onclick = () => { closeDrawers(); closeShare && closeShare(); closeZoom(); if (visible()[0] !== 1) goTo(1); };
 
 /* ---------- resize ---------- */
 let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => {
@@ -1168,11 +1218,11 @@ window.wakeChrome = wakeChrome;
 function overlayOpen(){ return !!document.querySelector('.drawer.open, .pop.open, .capo.open, .cardm.open, .zoom.open'); }
 function wakeChrome(){
   document.body.classList.remove('chrome-off'); clearTimeout(chromeT);
-  chromeT = setTimeout(() => { if (document.body.classList.contains('compact') && !overlayOpen()) document.body.classList.add('chrome-off'); }, 3200);
+  chromeT = setTimeout(() => { if (document.body.classList.contains('ochrome') && !overlayOpen()) document.body.classList.add('chrome-off'); }, 3200);
 }
-['pointerdown','keydown'].forEach(ev => addEventListener(ev, () => { if (document.body.classList.contains('compact')) wakeChrome(); }, {passive:true, capture:true}));
-addEventListener('pointermove', e => { if (e.pointerType === 'mouse' && document.body.classList.contains('compact')) wakeChrome(); }, {passive:true});
-if (document.body.classList.contains('compact')) wakeChrome();
+['pointerdown','keydown'].forEach(ev => addEventListener(ev, () => { if (document.body.classList.contains('ochrome')) wakeChrome(); }, {passive:true, capture:true}));
+addEventListener('pointermove', e => { if (e.pointerType === 'mouse' && document.body.classList.contains('ochrome')) wakeChrome(); }, {passive:true});
+if (document.body.classList.contains('ochrome')) wakeChrome();
 if (TOUCH) $('#hint').textContent = 'اسحب الصفحة بإصبعك للتقليب، أو اضغط على طرفها';
 $('#slider').max = N;
 
