@@ -268,6 +268,98 @@ body.ochrome .foot{padding-bottom:env(safe-area-inset-bottom);height:calc(52px +
 body.ochrome .brand .hm{width:36px;height:36px}
 .top{padding-top:env(safe-area-inset-top)}
 
+
+/* =========================================================
+   SIDE RAILS — landscape screens: controls stand vertically
+   on both sides, the magazine gets the full height
+   ========================================================= */
+.sep{display:block;width:1px;height:22px;background:var(--line);margin:0 4px;flex:none}
+.tip{position:fixed;z-index:80;pointer-events:none;background:#fff;color:#0b1630;font-size:12.5px;font-weight:500;padding:7px 12px;border-radius:10px;white-space:nowrap;box-shadow:0 10px 30px rgba(0,0,0,.35);opacity:0;transform:scale(.96);transition:opacity .15s,transform .15s}
+.tip.on{opacity:1;transform:none}
+body.rails{--rail:72px;--bar:0px;--foot:0px}
+body.rails .stage{top:0;bottom:0;left:var(--rail);right:var(--rail)}
+body.rails .top,body.rails .foot{top:0;bottom:0;height:auto;width:var(--rail);flex-direction:column;padding:18px 0;gap:0;
+  background:linear-gradient(rgba(10,20,44,.55),rgba(10,20,44,.35));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+body.rails .top{left:auto;right:0;justify-content:flex-start;border-left:1px solid var(--line)}
+body.rails .foot{left:0;right:auto;justify-content:space-between;border-right:1px solid var(--line)}
+body.rails .brand{padding:0;margin:0 0 6px;flex-direction:column;gap:6px}
+body.rails .brand b{font-size:13px;letter-spacing:0;display:block}
+body.rails .brand span{display:none}
+body.rails .brand:hover{background:none}
+body.rails .tools{flex:1;flex-direction:column;justify-content:center;align-items:center;gap:8px}
+body.rails .sep{width:22px;height:1px;margin:6px 0}
+body.rails .top .ib,body.rails .ab{width:44px;height:44px;min-width:44px;padding:0;border-radius:14px}
+body.rails .ab span{display:none}
+body.rails .acts{flex-direction:column;gap:10px}
+body.rails .topics{flex-direction:column;gap:8px}
+body.rails .tp{flex-direction:column;height:auto;width:48px;padding:4px 0;border-radius:24px;gap:0}
+body.rails .tp .tt{display:none}
+body.rails .like{flex-direction:column;gap:3px;height:auto;padding:8px 0 6px;width:100%;border-radius:20px;font-size:12px}
+body.rails .like i{right:50%;top:16px}
+body.rails .navg{flex-direction:column;gap:14px}
+body.rails .navg input[type=range]{display:block;direction:ltr;writing-mode:vertical-lr;width:3px;height:min(300px,34vh);
+  background:linear-gradient(to bottom,var(--blue) var(--p,0%),rgba(255,255,255,.15) var(--p,0%))}
+body.rails .count{min-width:0;font-size:11.5px;line-height:1.5;text-align:center}
+body.rails .count b{display:block;font-size:13px}
+body.rails .nav.fwd{left:calc(var(--rail) + 16px)}
+body.rails .nav.back{right:calc(var(--rail) + 16px)}
+body.rails .hint{top:14px}
+body.rails .toast{bottom:28px}
+body.rails.listening .toast{bottom:96px}
+/* rails in compact landscape / full screen: overlay + slide away */
+body.rails.ochrome{--rail:60px}
+body.rails.ochrome .stage{left:0;right:0}
+body.rails.ochrome .top,body.rails.ochrome .foot{height:auto;padding:calc(10px + env(safe-area-inset-top)) 0 calc(10px + env(safe-area-inset-bottom))}
+body.rails.ochrome .top{background:linear-gradient(to left,rgba(8,16,36,.92),rgba(8,16,36,.55));padding-right:env(safe-area-inset-right);width:calc(var(--rail) + env(safe-area-inset-right))}
+body.rails.ochrome .foot{background:linear-gradient(to right,rgba(8,16,36,.92),rgba(8,16,36,.55));padding-left:env(safe-area-inset-left);width:calc(var(--rail) + env(safe-area-inset-left))}
+body.rails.ochrome.chrome-off .top{transform:translateX(100%)}
+body.rails.ochrome.chrome-off .foot{transform:translateX(-100%)}
+body.rails.ochrome .top .ib,body.rails.ochrome .ab,body.rails.ochrome .brand .hm{width:40px;height:40px;min-width:40px}
+body.rails.ochrome .tools{gap:5px}
+body.rails.ochrome .sep{margin:3px 0}
+body.rails.ochrome .brand b{display:none}
+body.rails.ochrome .navg input[type=range]{display:block;height:min(160px,26vh)}
+body.rails.ochrome .player{bottom:10px}
+@media (max-height:520px){
+  body.rails #bLinks,body.rails .sep{display:none}
+  body.rails .tools{gap:4px}
+  body.rails .top .ib,body.rails .ab,body.rails .brand .hm{width:34px;height:34px;min-width:34px;border-radius:11px}
+  body.rails .top .ib svg,body.rails .ab svg,body.rails .brand .hm svg{width:18px;height:18px}
+  body.rails .brand{margin:0 0 4px}
+  body.rails .tp{width:40px}
+  body.rails .like{padding:6px 0 4px;font-size:11px}
+  body.rails .acts{gap:6px}
+  body.rails.ochrome{--rail:52px}
+}
+
+
+/* ---------- read-aloud player v2 ---------- */
+.player{padding:10px 12px 10px 10px;gap:12px;border-radius:22px;min-width:min(620px,calc(100vw - 24px))}
+.pcover{position:relative;width:44px;height:62px;flex:none;border-radius:6px;overflow:hidden;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.pcover img{width:100%;height:100%;object-fit:cover;display:block}
+.pcover .eq{position:absolute;inset:auto 0 0 0;height:22px;width:auto;margin:0;padding:0 8px 5px;gap:3px;background:linear-gradient(transparent,rgba(6,14,32,.85))}
+.pinfo{flex:1;min-width:0;max-width:none;gap:2px}
+.pinfo b{font-size:14px}
+.pbar{height:3px;border-radius:3px;background:rgba(255,255,255,.12);margin-top:7px;overflow:hidden}
+.pbar i{display:block;height:100%;width:0;background:var(--blue);border-radius:3px;transition:width .4s ease}
+.pctl{display:flex;align-items:center;gap:4px}
+.popt2{display:flex;align-items:center;gap:6px}
+.pchip{height:32px;padding:0 11px;border-radius:16px;display:flex;align-items:center;gap:6px;font-size:12px;background:rgba(255,255,255,.07);border:1px solid var(--line);white-space:nowrap;max-width:150px;transition:background .2s}
+.pchip:hover{background:rgba(255,255,255,.13)}
+.pchip svg{width:15px;height:15px;flex:none}
+.pchip span{overflow:hidden;text-overflow:ellipsis}
+.pchip.studio{background:rgba(95,180,240,.16);border-color:rgba(95,180,240,.45);cursor:default}
+.pchip.studio svg{color:var(--blue)}
+.tts i.w{background:rgba(255,196,0,.55);box-shadow:0 0 0 2px rgba(255,196,0,.25)}
+.tts i{transition:background .15s}
+body.rails .player{bottom:18px}
+@media (max-width:760px){
+  .player{min-width:0;gap:8px;padding:8px}
+  .pcover{display:none}
+  .popt2 .pchip#pVoice{display:none}
+  .pinfo b{font-size:12.5px}
+}
+
 /* ---------- touch devices ---------- */
 @media (hover:none),(pointer:coarse){ .nav{display:none} }
 
@@ -332,11 +424,14 @@ body.ochrome .capbar{height:52px}
   <div class="tools">
     <button class="ab lis" id="bListen" title="استمع للمجلة" aria-label="استمع للمجلة"><svg viewBox="0 0 24 24"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3.5" y="14" width="4" height="6" rx="1.5"/><rect x="16.5" y="14" width="4" height="6" rx="1.5"/></svg><span>استمع</span></button>
     <button class="ib" id="bSound" title="صوت التقليب" aria-label="صوت التقليب" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="w1" d="M15.5 9a4 4 0 0 1 0 6"/><path class="w2" d="M18 6.5a7.5 7.5 0 0 1 0 11"/><path class="mx" d="M16 9.5l5 5M21 9.5l-5 5"/></svg></button>
+    <i class="sep" aria-hidden="true"></i>
     <a class="ib" id="bDownload" href="__PDF__" download="__PDF__" title="تحميل المجلة PDF" aria-label="تحميل المجلة PDF"><svg viewBox="0 0 24 24"><path d="M12 4v11M8 11l4 4 4-4M5 19h14"/></svg></a>
+    <i class="sep" aria-hidden="true"></i>
     <button class="ib" id="bSearch" title="بحث (Ctrl+F)" aria-label="بحث"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
     <button class="ib" id="bThumbs" title="كل الصفحات" aria-label="كل الصفحات"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg></button>
     <button class="ib" id="bLinks" title="إظهار الروابط" aria-label="إظهار الروابط"><svg viewBox="0 0 24 24"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></svg></button>
     <button class="ib" id="bZoom" title="تكبير" aria-label="تكبير"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/></svg></button>
+    <i class="sep" aria-hidden="true"></i>
     <button class="ib" id="bFull" title="ملء الشاشة" aria-label="ملء الشاشة"><svg viewBox="0 0 24 24" class="fs-in"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><svg viewBox="0 0 24 24" class="fs-out"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>
   </div>
 </header>
@@ -348,13 +443,22 @@ body.ochrome .capbar{height:52px}
 
 <div class="hint" id="hint">اسحب طرف الصفحة أو استخدم الأسهم للتقليب</div>
 <div class="player" id="player" role="region" aria-label="القراءة الصوتية">
-  <div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-  <div class="pinfo"><b id="pTitle">القراءة الصوتية</b><span id="pInfo">اضغط على أي فقرة لتبدأ منها</span></div>
-  <button class="pbtn" id="pPrev" title="الفقرة السابقة" aria-label="الفقرة السابقة"><svg viewBox="0 0 24 24"><path d="M7 6v12"/><path d="M17 6l-8 6 8 6z"/></svg></button>
-  <button class="pbtn big" id="pPlay" title="إيقاف مؤقت" aria-label="تشغيل / إيقاف"><svg viewBox="0 0 24 24" class="ic-pause"><path d="M9 6v12M15 6v12"/></svg><svg viewBox="0 0 24 24" class="ic-play"><path d="M16 6v12L7 12z"/></svg></button>
-  <button class="pbtn" id="pNext" title="الفقرة التالية" aria-label="الفقرة التالية"><svg viewBox="0 0 24 24"><path d="M17 6v12"/><path d="M7 6l8 6-8 6z"/></svg></button>
-  <button class="pbtn sp" id="pRate" title="السرعة" aria-label="السرعة">1×</button>
-  <button class="pbtn" id="pClose" title="إغلاق" aria-label="إيقاف القراءة"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  <div class="pcover"><img id="pThumb" alt=""><div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></div></div>
+  <div class="pinfo">
+    <b id="pTitle">القراءة الصوتية</b>
+    <span id="pInfo">اضغط على أي فقرة لتبدأ منها</span>
+    <div class="pbar"><i id="pBar"></i></div>
+  </div>
+  <div class="pctl">
+    <button class="pbtn" id="pPrev" title="الجملة السابقة" aria-label="الجملة السابقة"><svg viewBox="0 0 24 24"><path d="M7 6v12"/><path d="M17 6l-8 6 8 6z"/></svg></button>
+    <button class="pbtn big" id="pPlay" title="تشغيل / إيقاف مؤقت" aria-label="تشغيل / إيقاف مؤقت"><svg viewBox="0 0 24 24" class="ic-pause"><path d="M9 6v12M15 6v12"/></svg><svg viewBox="0 0 24 24" class="ic-play"><path d="M16 6v12L7 12z"/></svg></button>
+    <button class="pbtn" id="pNext" title="الجملة التالية" aria-label="الجملة التالية"><svg viewBox="0 0 24 24"><path d="M17 6v12"/><path d="M7 6l8 6-8 6z"/></svg></button>
+  </div>
+  <div class="popt2">
+    <button class="pchip" id="pRate" dir="ltr" title="سرعة القراءة" aria-label="سرعة القراءة">1×</button>
+    <button class="pchip" id="pVoice" title="الصوت" aria-label="الصوت"><svg viewBox="0 0 24 24"><path d="M12 4a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V7a3 3 0 0 1 3-3z"/><path d="M6 11a6 6 0 0 0 12 0M12 17v3"/></svg><span id="pVoiceName">صوت الجهاز</span></button>
+    <button class="pbtn" id="pClose" title="إيقاف القراءة" aria-label="إيقاف القراءة"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
 </div>
 <footer class="foot">
   <div class="acts">
@@ -425,6 +529,7 @@ body.ochrome .capbar{height:52px}
   </div>
 </div>
 <div class="toast" id="toast"></div>
+<div class="tip" id="tip" role="tooltip"></div>
 
 <script>/*PAGEFLIP*/</script>
 <script>
@@ -485,7 +590,13 @@ function setCompact(){
   if (!o) B.classList.remove('chrome-off');
   return o;
 }
+function setRails(){
+  const r = innerWidth > innerHeight * 1.02 && innerWidth >= 560;
+  document.body.classList.toggle('rails', r);
+  return r;
+}
 function layout(){
+  setRails();
   const compact = setCompact();
   const st = $('#stage').getBoundingClientRect();
   const portrait = st.width < st.height * 1.02 || st.width < 560;
@@ -858,8 +969,13 @@ function openShare(){
   const p = $('#sharePop'), r = $('#bShare').getBoundingClientRect(), s = shareTarget();
   $('#shareTitle').innerHTML = `<b>${s.title}</b>شارك الموضوع برابط يفتح على صفحته مباشرة`;
   $('#sNative').style.display = navigator.share ? '' : 'none';
-  p.style.left = Math.max(10, Math.min(innerWidth - 310, r.left + r.width/2 - 150)) + 'px';
-  p.style.bottom = (innerHeight - r.top + 12) + 'px'; p.style.top = 'auto';
+  if (document.body.classList.contains('rails')){
+    p.style.left = (r.right + 14) + 'px'; p.style.bottom = 'auto';
+    p.style.top = Math.max(10, Math.min(innerHeight - 290, r.top + r.height/2 - 140)) + 'px';
+  } else {
+    p.style.left = Math.max(10, Math.min(innerWidth - 310, r.left + r.width/2 - 150)) + 'px';
+    p.style.bottom = (innerHeight - r.top + 12) + 'px'; p.style.top = 'auto';
+  }
   p.classList.add('open'); $('#bShare').classList.add('on');
 }
 function closeShare(){ $('#sharePop').classList.remove('open'); $('#bShare').classList.remove('on'); }
@@ -1083,56 +1199,70 @@ const Sound = (() => {
    ========================================================= */
 const TTS = window.TTS = (() => {
   const synth = window.speechSynthesis;
-  const strip = s => s.replace(/[\u064B-\u065F\u0670\u0640\u200B-\u200F\uFFFD]/g, '').replace(/^[\[\]]+|[\[\]]+$/g, '');
-  let voice = null, rate = 1, active = false, playing = false, pos = {n: 1, i: 0}, token = 0, ttsNav = false, cache = {};
+  const NAR = CFG.narration;                                // studio narration rendered at build time
+  const GAP = NAR ? {h: 380, p: 240, s: 60} : {h: 520, p: 340, s: 140};   // natural pauses (ms)
+  let voice = null, voices = [], rate = 1, active = false, playing = false, pos = {n: 1, i: 0}, token = 0, ttsNav = false;
+  let audio = null, raf = 0, wordIdx = -1;
+  const pre = new Map();
   try{ rate = +localStorage.getItem('adwaa-rate') || 1; }catch(e){}
-  function pickVoice(){
-    const vs = synth ? synth.getVoices().filter(v => /^ar([-_]|$)/i.test(v.lang)) : [];
-    const score = v => (/BH/i.test(v.lang) ? 3 : 0) + (/SA/i.test(v.lang) ? 2 : 0) + (/natural|online|neural|premium|enhanced/i.test(v.name) ? 8 : 0) + (/google/i.test(v.name) ? 4 : 0) + (v.localService ? 0 : 1);
-    vs.sort((a,b) => score(b) - score(a)); voice = vs[0] || null; return voice;
+  const chunks = n => (DATA.pages[n-1] && DATA.pages[n-1].say || []).map(c => ({n, idx: c.i, off: c.o, text: c.t, kind: c.k, lang: c.l, audio: c.a}));
+
+  /* ---- voices (device fallback) ---- */
+  function listVoices(){
+    if (!synth) return [];
+    const score = v => (/BH/i.test(v.lang) ? 3 : 0) + (/SA/i.test(v.lang) ? 2 : 0) + (/natural|online|neural|premium|enhanced|siri/i.test(v.name) ? 8 : 0) + (/google/i.test(v.name) ? 4 : 0) + (v.localService ? 0 : 1);
+    voices = synth.getVoices().filter(v => /^ar([-_]|$)/i.test(v.lang)).sort((a, b) => score(b) - score(a));
+    let saved = null; try{ saved = localStorage.getItem('adwaa-voice'); }catch(e){}
+    voice = voices.find(v => v.name === saved) || voices[0] || null;
+    paintVoice(); return voices;
   }
-  if (synth){ pickVoice(); synth.onvoiceschanged = pickVoice; }
-  // chunks of a page: paragraphs (PDF text blocks) split into sentences
-  function chunks(n){
-    if (cache[n]) return cache[n];
-    const W = DATA.pages[n-1].words, out = []; let blk = null, cur = null, len = 0;
-    const flush = () => { if (cur && cur.idx.length){ const txt = cur.idx.map(i => strip(W[i][0])).join(' ').replace(/\s+([،,.:؛!؟?])/g, '$1').trim(); if (/[؀-ۿA-Za-z]{2,}/.test(txt) && txt.replace(/[\s\d.\-–\[\]]/g,'').length > 3) out.push({n, idx: cur.idx, text: txt}); } cur = null; len = 0; };
-    // drop page furniture: folios, section tags like "[ مقالات ]", lone numbers
-    const bt = {}; W.forEach((w, i) => { const b = Math.floor(w[5] / 1000); (bt[b] ||= []).push(w[0]); });
-    const junk = b => { const s = bt[b].join(' ').trim(); return /^[\[\]]|[\[\]]$/.test(s) && s.length < 30 || /^[\d\s.\-–|]+$/.test(s) || s.replace(/\s/g,'').length < 3; };
-    W.forEach((w, i) => {
-      const b = Math.floor(w[5] / 1000);
-      if (junk(b)) return;
-      if (b !== blk){                                       // new text block in the PDF
-        const prev = blk; blk = b;
-        const last = cur && W[cur.idx[cur.idx.length - 1]][0];
-        const heading = cur && prev !== null && bt[prev].join(' ').length < 60 && cur.idx.every(i => Math.floor(W[i][5] / 1000) === prev);
-        if (cur && (heading || /[.؟?!؛:]$/.test(last))) flush();   // headings / finished sentences end here;
-      }                                                     // a paragraph's wrapped tail stays with it
-      if (!cur) cur = {idx: []};
-      cur.idx.push(i); len += w[0].length + 1;
-      if (/[.؟?!؛:]$/.test(w[0]) && len > 40 || len > 230 && /[،,]$/.test(w[0]) || len > 320) flush();
-    });
-    flush();
-    return cache[n] = out;
+  const shortName = v => v ? v.name.replace(/^(Microsoft|Google|Apple)\s*/i, '').replace(/\s*(Online|\(Natural\)|Natural|-.*|\(.*\))\s*/g, ' ').trim().split(' ')[0] || v.name : 'صوت الجهاز';
+  function paintVoice(){
+    const b = $('#pVoice'), n = $('#pVoiceName');
+    if (NAR){ b.classList.add('studio'); n.textContent = (NAR.name || 'Laila') === 'Laila' ? 'ليلى · صوت احترافي' : (NAR.name === 'Ali' ? 'علي · صوت احترافي' : NAR.name + ' · صوت احترافي'); b.dataset.tip = 'تسجيل بصوت عربي طبيعي'; return; }
+    n.textContent = shortName(voice); b.dataset.tip = voices.length > 1 ? 'تغيير الصوت' : 'صوت الجهاز';
   }
+  if (synth && !NAR){ listVoices(); synth.addEventListener ? synth.addEventListener('voiceschanged', listVoices) : (synth.onvoiceschanged = listVoices); }
+  $('#pVoice').onclick = () => {
+    if (NAR || voices.length < 2) return;
+    voice = voices[(voices.indexOf(voice) + 1) % voices.length];
+    try{ localStorage.setItem('adwaa-voice', voice.name); }catch(e){}
+    paintVoice(); toast('الصوت: ' + voice.name); if (playing) speak();
+  };
+
+  /* ---- UI ---- */
   const player = $('#player');
   function info(){
     const c = chunks(pos.n), t = topicOf(pos.n);
     $('#pTitle').textContent = t ? t.t : 'صفحة ' + pos.n;
-    $('#pInfo').textContent = `صفحة ${pos.n} · ${Math.min(pos.i + 1, c.length || 1)}/${c.length || 1}`;
+    $('#pInfo').textContent = `صفحة ${pos.n}` + (c[pos.i] && c[pos.i].kind === 'h' ? ' · عنوان' : '');
+    $('#pThumb').src = TH(t ? t.s : pos.n);
+    // progress through the article (or the page when outside articles)
+    const s0 = t ? t.s : pos.n, e0 = t ? t.e : pos.n; let tot = 0, done = 0;
+    for (let n = s0; n <= e0; n++){ const k = chunks(n).length; if (n < pos.n) done += k; else if (n === pos.n) done += Math.min(pos.i, k); tot += k; }
+    $('#pBar').style.width = (tot ? Math.round(done / tot * 100) : 0) + '%';
     player.classList.toggle('paused', !playing);
     $('#pRate').textContent = (rate === 1 ? '1' : String(rate)) + '×';
   }
   function clearHL(){ document.querySelectorAll('.tts').forEach(l => l.innerHTML = ''); }
   function paintHL(){
-    clearHL(); if (!active) return;
+    clearHL(); wordIdx = -1; if (!active) return;
     const c = chunks(pos.n)[pos.i]; if (!c) return;
     const el = pageEls[toIdx(c.n)]; if (!el) return;
     let layer = el.querySelector('.tts'); if (!layer){ layer = document.createElement('div'); layer.className = 'tts'; el.appendChild(layer); }
     const W = DATA.pages[c.n-1].words;
-    for (const i of c.idx){ const w = W[i], b = document.createElement('i'); Object.assign(b.style, {left: (w[1]*100 - .3) + '%', top: (w[2]*100 - .2) + '%', width: (w[3]*100 + .6) + '%', height: (w[4]*100 + .4) + '%'}); layer.appendChild(b); }
+    c.idx.forEach((i, k) => { const w = W[i], b = document.createElement('i'); b.dataset.k = k; Object.assign(b.style, {left: (w[1]*100 - .3) + '%', top: (w[2]*100 - .2) + '%', width: (w[3]*100 + .6) + '%', height: (w[4]*100 + .4) + '%'}); layer.appendChild(b); });
   }
+  function markWord(k){
+    if (k === wordIdx) return; wordIdx = k;
+    const c = chunks(pos.n)[pos.i]; if (!c) return;
+    const layer = pageEls[toIdx(c.n)]?.querySelector('.tts'); if (!layer) return;
+    layer.querySelectorAll('i.w').forEach(x => x.classList.remove('w'));
+    const b = layer.querySelector(`i[data-k="${k}"]`); if (b) b.classList.add('w');
+  }
+  const wordAtChar = (c, ch) => { let k = 0; while (k + 1 < c.off.length && c.off[k + 1] <= ch) k++; return k; };
+
+  /* ---- navigation through the script ---- */
   function advance(step){
     let {n, i} = pos; i += step;
     while (n >= 1 && n <= N){
@@ -1148,41 +1278,87 @@ const TTS = window.TTS = (() => {
     const wait = () => { if (pfState === 'read' && visible().includes(n)){ ttsNav = false; then(); } else setTimeout(wait, 120); };
     setTimeout(wait, 150);
   }
+  function stopSound(){
+    cancelAnimationFrame(raf);
+    if (audio){ audio.onended = audio.onerror = null; audio.pause(); }
+    if (synth) synth.cancel();
+  }
+  function next(my, kind){
+    if (my !== token || !playing) return;
+    setTimeout(() => {
+      if (my !== token || !playing) return;
+      if (advance(1)) speak(); else { playing = false; info(); clearHL(); toast('انتهت القراءة'); }
+    }, (GAP[kind] || GAP.s) / Math.max(rate, .8));
+  }
+  function preload(){
+    if (!NAR) return;
+    let {n, i} = pos;
+    for (let k = 0; k < 3; k++){ i++; let c = chunks(n); while (i >= c.length && n < N){ n++; i = 0; c = chunks(n); } const s = c[i]; if (!s || !s.audio || pre.has(s.audio)) continue; const a = new Audio(); a.preload = 'auto'; a.src = s.audio; pre.set(s.audio, a); if (pre.size > 6) pre.delete(pre.keys().next().value); }
+  }
   function speak(){
     if (!active) return;
-    const my = ++token; synth.cancel();
+    const my = ++token; stopSound();
     if (!chunks(pos.n)[pos.i] && !advance(0)) return stop();
     ensureVisible(pos.n, () => {
       if (my !== token) return;
       const c = chunks(pos.n)[pos.i];
       paintHL(); info();
       if (!playing) return;
-      const u = new SpeechSynthesisUtterance(c.text);
-      if (voice){ u.voice = voice; u.lang = voice.lang; } else u.lang = 'ar-SA';
-      u.rate = rate; u.pitch = 1;
-      u.onend = () => { if (my !== token || !playing) return; if (advance(1)) speak(); else { playing = false; info(); toast('انتهت القراءة'); } };
-      u.onerror = e => { if (my !== token) return; if (e.error !== 'interrupted' && e.error !== 'canceled'){ playing = false; info(); } };
-      synth.speak(u);
+      if (NAR && c.audio){
+        audio = pre.get(c.audio) || new Audio(c.audio); pre.delete(c.audio);
+        audio.playbackRate = rate; audio.preservesPitch = true; audio.mozPreservesPitch = true; audio.webkitPreservesPitch = true;
+        const len = c.text.length;
+        const tick = () => { if (my !== token) return; const d = audio.duration; if (d && isFinite(d)){ const f = Math.min(1, Math.max(0, (audio.currentTime - .08) / Math.max(.2, d - .35))); markWord(wordAtChar(c, f * len)); } raf = requestAnimationFrame(tick); };
+        audio.onended = () => { cancelAnimationFrame(raf); next(my, c.kind); };
+        audio.onerror = () => { cancelAnimationFrame(raf); deviceSpeak(c, my); };      // fall back for this sentence
+        audio.currentTime = 0;
+        const pr = audio.play(); if (pr && pr.catch) pr.catch(() => { playing = false; info(); });
+        raf = requestAnimationFrame(tick); preload();
+      } else deviceSpeak(c, my);
     });
+  }
+  function deviceSpeak(c, my){
+    if (!synth){ playing = false; info(); return; }
+    const u = new SpeechSynthesisUtterance(c.text);
+    if (c.lang === 'en'){ const en = synth.getVoices().find(v => /^en/i.test(v.lang)); if (en){ u.voice = en; u.lang = en.lang; } else u.lang = 'en-US'; }
+    else if (voice){ u.voice = voice; u.lang = voice.lang; } else u.lang = 'ar-SA';
+    u.rate = rate * (c.kind === 'h' ? .94 : 1); u.pitch = 1;
+    u.onboundary = e => { if (my === token && e.name !== 'sentence') markWord(wordAtChar(c, e.charIndex)); };
+    u.onend = () => next(my, c.kind);
+    u.onerror = e => { if (my !== token) return; if (e.error !== 'interrupted' && e.error !== 'canceled'){ playing = false; info(); } };
+    synth.speak(u);
   }
   function startAt(n, i = 0){ pos = {n, i}; if (!chunks(n).length) advance(0) || advance(1); playing = true; speak(); }
   function open(){
-    if (!synth){ toast('القراءة الصوتية غير مدعومة في هذا المتصفح'); return; }
+    if (!NAR && !synth){ toast('القراءة الصوتية غير مدعومة في هذا المتصفح'); return; }
     const go = () => {
-      if (!pickVoice()) toast('لا يوجد صوت عربي في جهازك، سيُستخدم الصوت الافتراضي');
+      if (!NAR && !listVoices().length) toast('لا يوجد صوت عربي في جهازك، سيُستخدم الصوت الافتراضي');
       active = true; document.body.classList.add('listening'); $('#bListen').classList.add('on'); player.classList.add('open');
-      applyClickMode();
+      applyClickMode(); paintVoice();
       const v = visible(); startAt(v[0]);
       toast('اضغط على أي فقرة لتبدأ القراءة منها');
     };
-    if (!synth.getVoices().length){ let done = false; const f = () => { if (!done){ done = true; go(); } }; synth.onvoiceschanged = () => { pickVoice(); f(); }; setTimeout(f, 900); }
+    if (!NAR && synth && !synth.getVoices().length){ let done = false; const f = () => { if (!done){ done = true; go(); } }; synth.addEventListener && synth.addEventListener('voiceschanged', f); setTimeout(f, 900); }
     else go();
   }
   function stop(){
-    token++; active = false; playing = false; if (synth) synth.cancel(); clearHL();
+    token++; active = false; playing = false; stopSound(); clearHL();
     document.body.classList.remove('listening'); $('#bListen').classList.remove('on'); player.classList.remove('open'); applyClickMode();
   }
   function applyClickMode(){ try{ pf.getSettings().disableFlipByClick = active; }catch(e){} }
+  function pause(){
+    playing = false; cancelAnimationFrame(raf);
+    if (NAR && audio && !audio.paused){ audio.pause(); } else { token++; if (synth) synth.cancel(); }
+    info();
+  }
+  function resume(){
+    playing = true;
+    if (NAR && audio && audio.paused && audio.currentTime > 0 && !audio.ended && chunks(pos.n)[pos.i]?.audio && audio.src.endsWith(chunks(pos.n)[pos.i].audio)){
+      const my = token, c = chunks(pos.n)[pos.i], len = c.text.length;
+      const tick = () => { if (my !== token) return; const d = audio.duration; if (d && isFinite(d)) markWord(wordAtChar(c, Math.min(1, Math.max(0, (audio.currentTime - .08) / Math.max(.2, d - .35))) * len)); raf = requestAnimationFrame(tick); };
+      audio.play().catch(() => {}); raf = requestAnimationFrame(tick); info();
+    } else speak();
+  }
   // tap a paragraph to read from it
   let down = null;
   $('#stage').addEventListener('pointerdown', e => { down = active ? {x: e.clientX, y: e.clientY, t: Date.now()} : null; }, true);
@@ -1198,11 +1374,25 @@ const TTS = window.TTS = (() => {
   });
   $('#bListen').onclick = () => active ? stop() : open();
   $('#pClose').onclick = stop;
-  $('#pPlay').onclick = () => { if (playing){ playing = false; token++; synth.cancel(); info(); } else { playing = true; speak(); } };
-  $('#pNext').onclick = () => { if (advance(1)) speak(); };
-  $('#pPrev').onclick = () => { if (advance(-1)) speak(); };
-  $('#pRate').onclick = () => { const R = [1, 1.25, 1.5, .85]; rate = R[(R.indexOf(rate) + 1) % R.length]; try{ localStorage.setItem('adwaa-rate', rate); }catch(e){} info(); if (playing) speak(); };
-  addEventListener('pagehide', () => { if (synth) synth.cancel(); });
+  $('#pPlay').onclick = () => playing ? pause() : resume();
+  $('#pNext').onclick = () => { if (advance(1)){ playing = true; speak(); } };
+  $('#pPrev').onclick = () => { if (advance(-1)){ playing = true; speak(); } };
+  $('#pRate').onclick = () => {
+    const R = [1, 1.15, 1.3, .9]; rate = R[(R.indexOf(rate) + 1) % R.length] || 1;
+    try{ localStorage.setItem('adwaa-rate', rate); }catch(e){}
+    info(); if (NAR && audio && !audio.paused) audio.playbackRate = rate; else if (playing) speak();
+  };
+  document.addEventListener('keydown', e => { if (!active || e.target.tagName === 'INPUT') return; if (e.key === 'k' || e.key === 'K'){ e.preventDefault(); playing ? pause() : resume(); } });
+  // Media Session: lock-screen / headphone controls on phones
+  if ('mediaSession' in navigator){
+    try{
+      navigator.mediaSession.setActionHandler('play', () => resume());
+      navigator.mediaSession.setActionHandler('pause', () => pause());
+      navigator.mediaSession.setActionHandler('nexttrack', () => { if (advance(1)) speak(); });
+      navigator.mediaSession.setActionHandler('previoustrack', () => { if (advance(-1)) speak(); });
+    }catch(e){}
+  }
+  addEventListener('pagehide', () => stopSound());
   return {
     onFlip(v){ if (!active || ttsNav) return; if (!v.includes(pos.n)){ pos = {n: v[0], i: 0}; if (!chunks(pos.n).length) advance(0) || advance(1); if (playing) speak(); else { paintHL(); info(); } } },
     repaint(){ applyClickMode(); paintHL(); },
@@ -1225,6 +1415,26 @@ addEventListener('pointermove', e => { if (e.pointerType === 'mouse' && document
 if (document.body.classList.contains('ochrome')) wakeChrome();
 if (TOUCH) $('#hint').textContent = 'اسحب الصفحة بإصبعك للتقليب، أو اضغط على طرفها';
 $('#slider').max = N;
+
+
+/* ---------- tooltips for toolbar buttons ---------- */
+(() => {
+  const tip = $('#tip'); let cur = null;
+  document.querySelectorAll('.top [title], .foot [title]').forEach(el => { el.dataset.tip = el.title; el.removeAttribute('title'); });
+  const show = el => {
+    const txt = el.dataset.tip || el.querySelector('[data-tip]')?.dataset.tip; if (!txt) return;
+    tip.textContent = txt; tip.classList.add('on'); cur = el;
+    const r = el.getBoundingClientRect(), t = tip.getBoundingClientRect(), B = document.body.classList;
+    let x, y;
+    if (B.contains('rails')){ y = r.top + r.height/2 - t.height/2; x = el.closest('.top') ? r.left - t.width - 12 : r.right + 12; }
+    else { x = r.left + r.width/2 - t.width/2; y = el.closest('.top') ? r.bottom + 10 : r.top - t.height - 10; }
+    tip.style.left = Math.max(8, Math.min(innerWidth - t.width - 8, x)) + 'px'; tip.style.top = Math.max(8, Math.min(innerHeight - t.height - 8, y)) + 'px';
+  };
+  const hide = () => { tip.classList.remove('on'); cur = null; };
+  document.addEventListener('pointerover', e => { if (e.pointerType !== 'mouse') return; const el = e.target.closest('.top [data-tip], .foot [data-tip], .like'); if (el && el !== cur){ if (el.classList.contains('like')) el.dataset.tip = el.closest('.tp')?.querySelector('.tt')?.textContent ? 'إعجاب · ' + el.closest('.tp').querySelector('.tt').textContent : 'إعجاب'; show(el); } else if (!el) hide(); });
+  document.addEventListener('pointerdown', hide, true);
+  addEventListener('blur', hide);
+})();
 
 /* ---------- boot ---------- */
 function hashPage(){ const m = location.hash.match(/^#page-(\d+)$/); return m ? +m[1] : 1; }

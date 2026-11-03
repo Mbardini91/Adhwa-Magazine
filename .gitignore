@@ -5,3 +5,4 @@ node_modules/
 firebase-debug.log
 firestore-debug.log
 __pycache__/
+azure.env

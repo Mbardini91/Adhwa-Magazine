@@ -24,6 +24,7 @@ TOOLS = ROOT / 'tools'
 PUB = ROOT / 'public'
 sys.path.insert(0, str(TOOLS))
 from words import page_words  # noqa: E402
+import speech  # noqa: E402
 
 PAGE_W, HI_W, THUMB_W = 1100, 2200, 200
 
@@ -142,24 +143,30 @@ def main():
     W, H = doc[0].rect.width, doc[0].rect.height
     names = doc.resolve_names()
 
-    for d in ('pages', 'hi', 'thumbs'):
-        shutil.rmtree(PUB / d, ignore_errors=True)
-        (PUB / d).mkdir(parents=True)
-    for old in PUB.glob('*.pdf'):
-        old.unlink()
-
-    log(f'{N} صفحة — تجهيز الصور…')
+    skip_img = '--skip-images' in sys.argv and (PUB / 'pages' / f'p{N:02d}.webp').exists() and not (PUB / 'pages' / f'p{N + 1:02d}.webp').exists()
+    if not skip_img:
+        for d in ('pages', 'hi', 'thumbs'):
+            shutil.rmtree(PUB / d, ignore_errors=True)
+            (PUB / d).mkdir(parents=True)
+        for old in PUB.glob('*.pdf'):
+            old.unlink()
+        log(f'{N} صفحة — تجهيز الصور…')
+    else:
+        log(f'{N} صفحة — الصور موجودة، تخطّيت إعادة توليدها (--skip-images)')
     pages = []
     for i, p in enumerate(doc):
-        pix = p.get_pixmap(matrix=fitz.Matrix(HI_W / p.rect.width, HI_W / p.rect.width), alpha=False)
-        im = Image.frombytes('RGB', (pix.width, pix.height), pix.samples)
-        n = f'{i + 1:02d}'
-        im.save(PUB / 'hi' / f'h{n}.webp', 'WEBP', quality=80, method=4)
-        im.resize((PAGE_W, round(PAGE_W * im.height / im.width)), Image.LANCZOS).save(PUB / 'pages' / f'p{n}.webp', 'WEBP', quality=80, method=6)
-        im.resize((THUMB_W, round(THUMB_W * im.height / im.width)), Image.LANCZOS).save(PUB / 'thumbs' / f't{n}.webp', 'WEBP', quality=75)
-        pages.append({'links': resolve_links(doc, p, W, H, names), 'words': page_words(p, W, H)})
-        print(f'\r  صفحة {i + 1}/{N}', end='', flush=True)
-    print()
+        if not skip_img:
+            pix = p.get_pixmap(matrix=fitz.Matrix(HI_W / p.rect.width, HI_W / p.rect.width), alpha=False)
+            im = Image.frombytes('RGB', (pix.width, pix.height), pix.samples)
+            n = f'{i + 1:02d}'
+            im.save(PUB / 'hi' / f'h{n}.webp', 'WEBP', quality=80, method=4)
+            im.resize((PAGE_W, round(PAGE_W * im.height / im.width)), Image.LANCZOS).save(PUB / 'pages' / f'p{n}.webp', 'WEBP', quality=80, method=6)
+            im.resize((THUMB_W, round(THUMB_W * im.height / im.width)), Image.LANCZOS).save(PUB / 'thumbs' / f't{n}.webp', 'WEBP', quality=75)
+            print(f'\r  صفحة {i + 1}/{N}', end='', flush=True)
+        words = page_words(p, W, H)
+        pages.append({'links': resolve_links(doc, p, W, H, names), 'words': words, 'say': speech.segments(words)})
+    if not skip_img:
+        print()
     nlinks = sum(len(p['links']) for p in pages)
     nwords = sum(len(p['words']) for p in pages)
     log(f'الروابط: {nlinks} · الكلمات القابلة للبحث: {nwords}')
@@ -176,21 +183,40 @@ def main():
         if not re.fullmatch(r'[a-z0-9-]{1,32}', t['id']) or not (1 <= t['s'] <= t['e'] <= N):
             sys.exit(f'موضوع غير صالح في issue.json: {t}')
 
+    # ---- read-aloud: studio narration with a neural voice (optional) ----
+    nar = cfg.get('narration') or {}
+    voice = nar.get('voice', 'ar-BH-LailaNeural')
+    creds = None if '--no-audio' in sys.argv else speech.load_azure()
+    nseg = sum(len(p['say']) for p in pages); nchar = sum(len(s['t']) for p in pages for s in p['say'])
+    narration = None
+    if creds:
+        log(f'القراءة الصوتية: {nseg} مقطع · {nchar:,} حرف · الصوت {voice}')
+        new, reused, chars = speech.narrate(pages, str(PUB / 'audio'), voice, nar.get('rate', '-4%'), nar.get('pitch', '0%'), creds, log)
+        log(f'تسجيل جديد: {new} مقطع ({chars:,} حرف) · من الذاكرة: {reused}')
+        narration = {'voice': voice, 'name': nar.get('name') or voice.split('-')[-1].replace('Neural', '')}
+    elif (PUB / 'audio').exists() and '--no-audio' not in sys.argv:
+        log('لا يوجد مفتاح Azure — القراءة الصوتية ستستخدم صوت جهاز القارئ (السابق محفوظ في public/audio لكن لن يُستخدم)')
+    else:
+        log(f'القراءة الصوتية بصوت جهاز القارئ ({nseg} مقطع). للصوت الاحترافي أضف مفتاح Azure — راجع README.')
+
     dl = cfg.get('download_name') or f'Adwaa-{cfg["number"]}.pdf'
-    log('ضغط ملف التحميل…')
-    small = fitz.open(pdf)
-    try:
-        small.rewrite_images(dpi_threshold=170, dpi_target=150, quality=78)
-        small.subset_fonts()
-    except Exception as e:
-        log(f'(تخطّي الضغط: {e})')
-    small.ez_save(PUB / dl, garbage=4, deflate=True)
-    log(f'{dl}: {os.path.getsize(PUB / dl) / 1e6:.1f} MB (الأصلي {os.path.getsize(pdf) / 1e6:.1f} MB)')
+    if skip_img and (PUB / dl).exists():
+        log(f'ملف التحميل موجود: {dl}')
+    else:
+      log('ضغط ملف التحميل…')
+      small = fitz.open(pdf)
+      try:
+          small.rewrite_images(dpi_threshold=170, dpi_target=150, quality=78)
+          small.subset_fonts()
+      except Exception as e:
+          log(f'(تخطّي الضغط: {e})')
+      small.ez_save(PUB / dl, garbage=4, deflate=True)
+      log(f'{dl}: {os.path.getsize(PUB / dl) / 1e6:.1f} MB (الأصلي {os.path.getsize(pdf) / 1e6:.1f} MB)')
 
     make_og(PUB / 'hi' / 'h01.webp', PUB / 'og-cover.jpg')
 
     site = (cfg.get('site_url') or 'https://PROJECT-ID.web.app').rstrip('/')
-    issue = {'id': cfg['id'], 'number': cfg['number'], 'label': cfg['label'], 'topics': topics}
+    issue = {'id': cfg['id'], 'number': cfg['number'], 'label': cfg['label'], 'topics': topics, 'narration': narration}
     data = {'w': W, 'h': H, 'pages': pages}
     tpl = (TOOLS / 'template.html').read_text(encoding='utf-8')
     lib = (TOOLS / 'vendor' / 'page-flip.patched.js').read_text(encoding='utf-8')
