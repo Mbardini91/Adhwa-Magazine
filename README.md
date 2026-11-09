@@ -19,7 +19,7 @@ Adhwa-Magazine/
 │   ├── firebase-config.js  ← إعدادات مشروعك (الخطوة 4)
 │   ├── likes.bundle.js     ← مكتبة Firebase (مضمّنة، بدون روابط خارجية)
 │   ├── pages/ hi/ thumbs/  ← صور الصفحات
-│   ├── Adwaa-19-Q2-2026.pdf← ملف التحميل (مضغوط، الروابط والنص فيه شغالين)
+│   ├── Adwaa-10-Q2-2026.pdf← ملف التحميل (مضغوط، الروابط والنص فيه شغالين)
 │   └── og-cover.jpg        ← صورة المعاينة عند مشاركة الرابط
 ├── firebase.json · firestore.rules · .firebaserc
 ```
