@@ -21,6 +21,7 @@
 <meta name="theme-color" content="#0b1630">
 <link rel="icon" href="favicon.png">
 <script src="firebase-config.js"></script>
+<script src="supabase-config.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <style>
@@ -590,6 +591,7 @@ function closeGame(){ $('#gameOv').hidden = true; $('#gFrame').src = 'about:blan
 document.addEventListener('click', e => {
   const g = e.target.closest('a[data-game]');
   if (!g) return;
+  if (window.Stats) Stats.ev('game', {c: gameInline() ? 'inline' : 'external', p: visible()[0]});
   if (gameInline()){ e.preventDefault(); e.stopPropagation(); closeZoom(); openGame(g.href); }
   else g.href = gameUrl(g.href, (matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || navigator.standalone) ? 'app' : 'magazine', false);
 }, true);
@@ -714,6 +716,7 @@ function onFlip(){
   try{ history.replaceState(null,'','#page-'+first); }catch(e){}
   if (window.renderTopics) renderTopics(v);
   if (window.TTS) TTS.onFlip(v);
+  if (window.Stats){ Stats.open(first); Stats.view(v); }
 }
 
 /* navigation (reading direction = RTL, so "forward" is flipPrev on the reversed stack) */
@@ -833,7 +836,8 @@ function showHL(h){
       Object.assign(i.style,{left:(w[1]*100-.3)+'%',top:(w[2]*100-.15)+'%',width:(w[3]*100+.6)+'%',height:(w[4]*100+.3)+'%'}); layer.appendChild(i); }
   }
 }
-let st; $('#q').addEventListener('input', e => { clearTimeout(st); st = setTimeout(()=>search(e.target.value), 180); });
+let st, sst, lastQ = ''; $('#q').addEventListener('input', e => { clearTimeout(st); st = setTimeout(()=>search(e.target.value), 180);
+  clearTimeout(sst); sst = setTimeout(() => { const v = e.target.value.trim(); if (v.length >= 2 && v !== lastQ && window.Stats){ lastQ = v; Stats.ev('search', {q: v, v: lastHits ? lastHits.length : 0}); } }, 1500); });
 $('#q').addEventListener('keydown', e => { if (e.key==='Enter'){ const f=$('.res'); if(f) f.click(); } });
 
 /* ---------- zoom ---------- */
@@ -919,6 +923,102 @@ const TOPICS = CFG.topics;
 const topicOf = n => TOPICS.find(t => n >= t.s && n <= t.e);
 const topicsFor = v => { const o=[]; v.forEach(n=>{ const t=topicOf(n); if (t && !o.includes(t)) o.push(t); }); return o; };
 
+/* =========================================================
+   STATS — إحصائيات القراءة ← منصة إدارة الاتصال (Supabase)
+   مجهولة بالكامل: رقم عشوائي للجهاز ورقم للجلسة، بدون اسم أو إيميل أو IP.
+   ما تشتغل في المعاينة المحلية أو داخل Claude حتى ما تختلط الأرقام.
+   ========================================================= */
+const Stats = window.Stats = (() => {
+  const SB = window.ADWAA_SUPABASE || {};
+  const hasSB = !!(SB.url && SB.key) && /^https?:$/.test(location.protocol);
+  const on = hasSB && !/claude|localhost|127\.0\.0\.1|^0\.0\.0\.0$|\.local$/i.test(location.hostname);
+  const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random()*16|0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); }));
+  const LS = (k, v) => { try{ if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); }catch(e){ return null; } };
+  let visitor = LS('adwaa-vid'); const ret = !!visitor;
+  if (!/^[0-9a-f-]{36}$/i.test(visitor || '')){ visitor = uuid(); LS('adwaa-vid', visitor); }
+  // نفس التبويب خلال 30 دقيقة = نفس الجلسة (إعادة التحميل ما تحسب زيارة جديدة)
+  const SK = 'adwaa-sid-' + CFG.id; let sess = null;
+  try{ const o = JSON.parse(sessionStorage.getItem(SK) || 'null'); if (o && Date.now() - o.at < 30*60e3) sess = o.id; }catch(e){}
+  const fresh = !sess; if (!sess) sess = uuid();
+  const touch = () => { try{ sessionStorage.setItem(SK, JSON.stringify({id: sess, at: Date.now()})); }catch(e){} };
+  touch();
+  const standalone = () => matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || navigator.standalone;
+  const device = (() => { const ua = navigator.userAgent;
+    if (/iPad|Tablet/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) || (/Android/.test(ua) && !/Mobile/.test(ua))) return 'tablet';
+    return /Mobi|iPhone|iPod|Android/i.test(ua) ? 'mobile' : 'desktop'; })();
+  // من وين وصل القارئ: ?via=… (روابط المشاركة وQR) ثم الـreferrer
+  const source = (() => {
+    const ALIAS = {wa: 'whatsapp', tw: 'x', twitter: 'x', li: 'linkedin', ig: 'instagram', fb: 'facebook', mail: 'email', qrcode: 'qr', corpcom: 'platform', native: 'share', copy: 'link'};
+    let u; try{ u = new URL(location.href); }catch(e){ return 'direct'; }
+    let p = (u.searchParams.get('via') || u.searchParams.get('utm_source') || '').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 24);
+    // نشيل الوسم من الرابط حتى ما ينتقل مع المشاركة التالية
+    if (u.searchParams.has('via') || u.searchParams.has('utm_source')){ ['via','utm_source','utm_medium','utm_campaign'].forEach(k => u.searchParams.delete(k)); try{ history.replaceState(null, '', u.pathname + u.search + u.hash); }catch(e){} }
+    if (p) return ALIAS[p] || p;
+    if (standalone()) return 'app';
+    let h = ''; try{ h = new URL(document.referrer).hostname.replace(/^www\./, ''); }catch(e){}
+    if (!h || h === location.hostname) return 'direct';
+    const R = [[/whatsapp|wa\.me/, 'whatsapp'], [/linkedin|lnkd\.in/, 'linkedin'], [/(^|\.)t\.co$|twitter|(^|\.)x\.com$/, 'x'], [/instagram/, 'instagram'],
+      [/facebook|(^|\.)fb\.(com|me)$/, 'facebook'], [/(^|\.)t\.me$|telegram/, 'telegram'], [/corpcom-team/, 'platform'], [/lmra/, 'lmra'],
+      [/teams\.|teams\.microsoft/, 'teams'], [/mail\.|outlook|office|live\.com/, 'email'], [/google\./, 'google'], [/bing\.|duckduckgo|yahoo|yandex/, 'search']];
+    for (const [re, k] of R) if (re.test(h)) return k;
+    return 'web';
+  })();
+
+  const q = []; let timer = null, metaSent = LS('adwaa-meta-' + CFG.id) === '1';
+  function flush(){
+    clearTimeout(timer); timer = null;
+    if (!on || !q.length) return;
+    while (q.length){
+      const body = {p_issue: CFG.id, p_visitor: visitor, p_session: sess, p_events: q.splice(0, 80)};
+      if (!metaSent){ body.p_meta = {number: CFG.number, label: CFG.label, pages: N, topics: TOPICS.map(({id, s, e, t}) => ({id, s, e, t}))}; metaSent = true; LS('adwaa-meta-' + CFG.id, '1'); }
+      try{ fetch(SB.url + '/rest/v1/rpc/adwaa_track', {method: 'POST', keepalive: true, headers: {apikey: SB.key, 'Content-Type': 'application/json'}, body: JSON.stringify(body)}).catch(() => {}); }catch(e){}
+    }
+  }
+  function push(e){ if (!on) return; q.push(e); touch(); if (!timer) timer = setTimeout(flush, 4000); if (q.length >= 40) flush(); }
+
+  // وقت القراءة الفعلي: الصفحة ظاهرة وفيه تفاعل خلال آخر دقيقتين (أو القراءة الصوتية شغالة)
+  let active = 0, lastAct = Date.now(), lastSentT = 0; const dwell = {}; let listenS = 0;
+  const seen = new Set();
+  ['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(ev => addEventListener(ev, () => { lastAct = Date.now(); }, {passive: true, capture: true}));
+  const listening = () => document.body.classList.contains('listening');
+  function commit(){
+    for (const k in dwell){ if (dwell[k] >= 1) push({t: 'topic', tp: k, v: dwell[k]}); delete dwell[k]; }
+    if (listenS){ push({t: 'listen', v: listenS}); listenS = 0; }
+    if (active > lastSentT){ push({t: 'time', v: active}); lastSentT = active; }
+  }
+  if (on) setInterval(() => {
+    const lis = listening();
+    if (lis) listenS++;
+    if (document.visibilityState !== 'visible' && !lis) return;
+    if (Date.now() - lastAct > 120e3 && !lis) return;
+    active++;
+    try{ topicsFor(visible()).forEach(t => { dwell[t.id] = (dwell[t.id] || 0) + 1; }); }catch(e){}
+    if (active % 30 === 0) commit();
+  }, 1000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden'){ commit(); flush(); } else lastAct = Date.now(); });
+  addEventListener('pagehide', () => { commit(); flush(); });
+  addEventListener('appinstalled', () => push({t: 'install'}));
+
+  let opened = false;
+  return {
+    on, hasSB, SB, visitor, sess,
+    open(p){ if (opened) return; opened = true; if (fresh) push({t: 'open', src: source, dev: device, ret, p}); },
+    view(v){ v.forEach(n => { if (!seen.has(n)){ seen.add(n); push({t: 'page', p: n}); } }); },
+    ev(t, o = {}){ push(Object.assign({t}, o)); },
+    // رابط مشاركة يحمل مصدره (?via=) عشان نعرف من وين رجع القارئ
+    link(page, via){ const base = location.origin + location.pathname; return base + (via ? '?via=' + via : '') + '#page-' + page; },
+    flush
+  };
+})();
+document.addEventListener('click', e => {
+  if (e.target.closest('#bDownload')) Stats.ev('download', {p: visible()[0]});
+  const l = e.target.closest('a.lk[href]');
+  if (l && !l.dataset.go && !l.dataset.game){
+    let c = 'other'; try{ const u = new URL(l.href); c = u.protocol === 'mailto:' ? 'mailto' : u.protocol === 'tel:' ? 'tel' : u.hostname.replace(/^www\./, '').toLowerCase(); }catch(e){}
+    Stats.ev('link', {c: c.replace(/[^a-z0-9_.:-]/g, '').slice(0, 60) || 'other', p: +(l.closest('[data-n]')?.dataset.n || visible()[0])});
+  }
+}, true);
+
 function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),2200); }
 const openURL = u => { const a=document.createElement('a'); a.href=u; a.target='_blank'; a.rel='noopener'; document.body.appendChild(a); a.click(); a.remove(); };
 async function copyText(s){
@@ -935,7 +1035,20 @@ const Likes = (() => {
   const saveL = () => { try{ localStorage.setItem(LS, JSON.stringify(local)); }catch(e){} };
   const cache = {}, pending = {}; let remote = null;
   const cfg = window.FIREBASE_CONFIG;
-  const ready = (cfg && cfg.apiKey) ? new Promise(res => {
+  const ready = Stats.hasSB ? (async () => {
+    // Supabase: عدّاد واحد لكل مواضيع العدد، والإعجاب يمر عبر adwaa_like
+    const rpc = (fn, body) => fetch(Stats.SB.url + '/rest/v1/rpc/' + fn, {method: 'POST', headers: {apikey: Stats.SB.key, 'Content-Type': 'application/json'}, body: JSON.stringify(body)})
+      .then(r => r.ok ? r.json() : r.text().then(t => { throw new Error(t || r.status); }));
+    let state = null;
+    const load = () => state ||= rpc('adwaa_like_state', {p_issue: CFG.id, p_visitor: Stats.visitor})
+      .then(rows => { const m = {}; (rows || []).forEach(r => { m[r.topic] = r; }); return m; })
+      .catch(e => { state = null; throw e; });
+    try{ await load(); }catch(e){ console.warn('[likes]', e); return; }
+    remote = {
+      async get(id){ const m = await load(); const r = m[id]; return {count: r ? +r.n : 0, liked: !!(r && r.mine)}; },
+      async set(id, liked){ const n = await rpc('adwaa_like', {p_issue: CFG.id, p_topic: id, p_visitor: Stats.visitor, p_session: Stats.sess, p_liked: liked}); return typeof n === 'number' ? n : null; }
+    };
+  })() : (cfg && cfg.apiKey) ? new Promise(res => {
     const s = document.createElement('script'); s.src = 'likes.bundle.js'; s.async = true;
     s.onload = () => window.AdwaaLikes.connect(cfg, CFG.id).then(r => { remote = r; res(); }).catch(e => { console.warn('[likes]', e); res(); });
     s.onerror = () => res(); document.head.appendChild(s);
@@ -955,7 +1068,7 @@ const Likes = (() => {
     const liked = !c.liked; c.liked = liked; c.count = Math.max(0, c.count + (liked ? 1 : -1));
     local[id] = liked; saveL(); emit(id);                       // optimistic
     if (remote){
-      try{ await remote.set(id, liked); }
+      try{ const n = await remote.set(id, liked); if (typeof n === 'number' && c.liked === liked){ c.count = n; emit(id); } }
       catch(e){ c.liked = !liked; c.count = Math.max(0, c.count + (liked ? -1 : 1)); local[id] = !liked; saveL(); emit(id); toast('تعذّر حفظ الإعجاب، حاول مرة أخرى'); }
     }
     return c;
@@ -1023,8 +1136,12 @@ $('#bShare').onclick = e => { e.stopPropagation(); $('#sharePop').classList.cont
 document.addEventListener('pointerdown', e => { if (!e.target.closest('#sharePop,#bShare')) closeShare(); });
 $('#sharePop').addEventListener('click', async e => {
   const b = e.target.closest('button[data-s]'); if (!b) return;
-  const {url, title, text} = shareTarget(), enc = encodeURIComponent;
-  switch (b.dataset.s){
+  const st = shareTarget(), {title, text} = st, enc = encodeURIComponent, ch = b.dataset.s;
+  const VIA = {native: 'share', wa: 'whatsapp', x: 'x', li: 'linkedin', mail: 'email', copy: 'link'};
+  const pg = +(st.url.match(/#page-(\d+)/) || [0, visible()[0]])[1];
+  const url = Stats.link(pg, VIA[ch]);
+  Stats.ev('share', {c: VIA[ch] || ch, tp: curTopics[0]?.id, p: pg});
+  switch (ch){
     case 'native': try{ await navigator.share({title, text, url}); }catch(e){} break;
     case 'wa':   openURL(`https://wa.me/?text=${enc(text + '\n' + url)}`); break;
     case 'x':    openURL(`https://twitter.com/intent/tweet?text=${enc(text)}&url=${enc(url)}`); break;
@@ -1114,6 +1231,7 @@ async function makeCard(S){
     const f = new File([cardBlob], cardName, {type:'image/png'});
     $('#cShare').style.display = (navigator.canShare && navigator.canShare({files:[f]})) ? '' : 'none';
     $('#cardm').classList.add('open');
+    Stats.ev('capture', {c: 'create', tp: topicsFor(cardPages)[0]?.id, p: cardPages[0]});
   } catch(err){ console.error(err); toast('تعذّر إنشاء الصورة'); }
   finally{ document.body.style.cursor = ''; }
 }
@@ -1160,14 +1278,16 @@ function closeCard(){ $('#cardm').classList.remove('open'); }
 $('#cClose').onclick = closeCard;
 $('#cardm').addEventListener('click', e => { if (e.target.id === 'cardm') closeCard(); });
 $('#cAgain').onclick = () => { closeCard(); setTimeout(enterCapture, 120); };
-$('#cSave').onclick = () => { const a = document.createElement('a'); a.href = $('#cardImg').src; a.download = cardName; document.body.appendChild(a); a.click(); a.remove(); };
+const capEv = c => Stats.ev('capture', {c, tp: topicsFor(cardPages)[0]?.id, p: cardPages[0]});
+$('#cSave').onclick = () => { capEv('save'); const a = document.createElement('a'); a.href = $('#cardImg').src; a.download = cardName; document.body.appendChild(a); a.click(); a.remove(); };
 $('#cCopy').onclick = async () => {
-  try{ await navigator.clipboard.write([new ClipboardItem({'image/png': cardBlob})]); toast('تم نسخ الصورة'); }
+  try{ await navigator.clipboard.write([new ClipboardItem({'image/png': cardBlob})]); toast('تم نسخ الصورة'); capEv('copy'); }
   catch(e){ toast('النسخ غير متاح في هذا المتصفح — استخدم «حفظ»'); }
 };
 $('#cShare').onclick = async () => {
   const s = shareTarget(), t = topicsFor(cardPages)[0];
-  const url = location.href.split('#')[0] + '#page-' + cardPages[0];
+  const url = Stats.link(cardPages[0], 'quote');
+  capEv('share');
   try{ await navigator.share({files:[new File([cardBlob], cardName, {type:'image/png'})], title: t ? t.t : 'مجلة أضواء', text: (t ? `«${t.t}» — ` : '') + 'مجلة أضواء\n' + url}); }catch(e){}
 };
 
