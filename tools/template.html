@@ -154,6 +154,13 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border:0;border-radiu
 .zp{position:relative;background:#fff;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .zp img{display:block;width:100%;height:100%;-webkit-user-drag:none}
 
+.gameov{position:fixed;inset:0;z-index:55;background:#08111f;display:flex;flex-direction:column}
+.gameov[hidden]{display:none}
+.gbar{flex:0 0 auto;position:relative;z-index:2;height:calc(60px + env(safe-area-inset-top,0px));min-height:60px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 22px;padding-top:env(safe-area-inset-top,0px);background:linear-gradient(#0d1a38,#08111f);border-bottom:1px solid var(--line)}
+.gbar .gt{font-size:15px;font-weight:600;letter-spacing:.3px}
+.gbar .gt small{display:block;font-size:11px;font-weight:400;color:var(--mute)}
+.gameov iframe{flex:1 1 auto;min-height:0;width:100%;border:0;background:#08111f;position:relative;z-index:1}
+.lk[data-game]{cursor:pointer}
 .loader{position:fixed;inset:0;display:grid;place-items:center;z-index:60;background:var(--navy);transition:opacity .6s}
 .loader.done{opacity:0;pointer-events:none}
 .loader div{font-size:30px;font-weight:600;letter-spacing:1px;animation:breathe 1.6s ease-in-out infinite}
@@ -496,6 +503,16 @@ body.ochrome .capbar{height:52px}
   <div class="zsc" id="zsc"><div class="zin" id="zin"></div></div>
 </div>
 
+<!-- لعبة رحلة القيم: تفتح داخل المجلة عند التصفح من الموقع -->
+<div class="gameov" id="gameOv" role="dialog" aria-label="لعبة رحلة القيم" hidden>
+  <div class="gbar">
+    <button class="ib" id="gClose" aria-label="العودة إلى المجلة"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <div class="gt">رحلة القيم<small>لعبة العدد · النتائج مباشرة</small></div>
+    <a class="ib" id="gExt" target="_blank" rel="noopener" aria-label="فتح اللعبة في نافذة جديدة"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
+  </div>
+  <iframe id="gFrame" title="لعبة رحلة القيم" allow="autoplay; fullscreen"></iframe>
+</div>
+
 <!-- share sheet -->
 <div class="pop" id="sharePop" role="dialog" aria-label="مشاركة">
   <div class="popt" id="shareTitle"></div>
@@ -550,12 +567,35 @@ function linkEls(pg, n){
     a.className = 'lk';
     const [x,y,w,h] = l.b;
     Object.assign(a.style,{left:x*100+'%',top:y*100+'%',width:w*100+'%',height:h*100+'%'});
-    if (l.u){ a.href = l.u; a.target = '_blank'; a.rel = 'noopener'; a.title = l.u.startsWith('mailto:') ? l.u.slice(7).split('?')[0] : decodeURI(l.u).replace(/^https?:\/\//,'').slice(0,70); }
+    if (l.u){ a.href = l.u; a.target = '_blank'; a.rel = 'noopener'; a.title = l.u.startsWith('mailto:') ? l.u.slice(7).split('?')[0] : decodeURI(l.u).replace(/^https?:\/\//,'').slice(0,70);
+      if (GAME_RE.test(l.u)){ a.dataset.game = '1'; a.title = 'العب رحلة القيم'; } }
     else { a.href = '#page-'+l.p; a.dataset.go = l.p; a.title = 'انتقل إلى صفحة '+l.p; }
     f.appendChild(a);
   }
   return f;
 }
+/* ---------- رحلة القيم ----------
+   من الموقع (متصفح متصل): اللعبة تفتح داخل المجلة.
+   من المجلة المثبّتة على الجهاز، أو بدون اتصال، أو داخل معاينة Claude: تفتح كرابط خارجي. */
+const GAME_RE = /corpcom-team\.vercel\.app\/game/;
+const gameUrl = (u, src, embed) => { try{ const x = new URL(u); x.searchParams.set('src', src); if (embed) x.searchParams.set('embed', '1'); else x.searchParams.delete('embed'); return x.href; }catch(e){ return u; } };
+const gameInline = () => !(matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || navigator.standalone) && navigator.onLine !== false && !/claude/i.test(location.hostname);
+function openGame(u){
+  const f = $('#gFrame'); f.src = gameUrl(u, 'magazine', true); $('#gExt').href = gameUrl(u, 'magazine', false);
+  $('#gameOv').hidden = false; document.body.classList.add('game-open');
+  try{ if (typeof stopReading === 'function') stopReading(); }catch(e){}
+  setTimeout(() => { try{ f.focus(); }catch(e){} }, 350);
+}
+function closeGame(){ $('#gameOv').hidden = true; $('#gFrame').src = 'about:blank'; document.body.classList.remove('game-open'); }
+document.addEventListener('click', e => {
+  const g = e.target.closest('a[data-game]');
+  if (!g) return;
+  if (gameInline()){ e.preventDefault(); e.stopPropagation(); closeZoom(); openGame(g.href); }
+  else g.href = gameUrl(g.href, (matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || navigator.standalone) ? 'app' : 'magazine', false);
+}, true);
+document.addEventListener('keydown', e => { if ($('#gameOv').hidden) return; if (e.key === 'Escape') closeGame(); e.stopImmediatePropagation(); e.stopPropagation(); }, true);
+document.addEventListener('DOMContentLoaded', () => { const c = $('#gClose'); if (c) c.addEventListener('click', closeGame); });
+if (document.readyState !== 'loading'){ const c = $('#gClose'); if (c) c.addEventListener('click', closeGame); }
 document.addEventListener('click', e => {
   const a = e.target.closest('a[data-go]');
   if (a){ e.preventDefault(); e.stopPropagation(); closeZoom(); goTo(+a.dataset.go); }
