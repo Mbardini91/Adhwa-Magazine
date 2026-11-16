@@ -495,6 +495,52 @@ body.ochrome .sectag{display:none}
 .gok b{display:block;font-size:22px;margin:4px 0 6px;color:#0f5132}
 .gok button{margin-top:10px;font-size:13px;color:#0e89ca;text-decoration:underline;text-underline-offset:3px}
 
+
+/* =========================================================
+   LIBRARY — the shelf of issues the reader lands on
+   ========================================================= */
+.lib{position:fixed;inset:0;z-index:59;overflow:hidden;display:flex;flex-direction:column;align-items:center;color:var(--ink);user-select:none;-webkit-user-select:none;
+  background:radial-gradient(1100px 620px at 50% 38%,#1b3a78 0%,#0d1d40 55%,#060d20 100%);transition:opacity .55s ease,visibility .55s}
+.lib[hidden]{display:flex;opacity:0;visibility:hidden;pointer-events:none}
+.lib::before{content:"";position:absolute;left:-10%;right:-10%;top:66%;height:40%;background:radial-gradient(50% 60% at 50% 0%,rgba(95,180,240,.16),transparent 70%);pointer-events:none}
+.libh{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:calc(26px + env(safe-area-inset-top))}
+.libh img{height:46px}
+.libh span{font-size:12.5px;letter-spacing:.02em;color:#9fb2d6}
+.shelf{position:relative;flex:1;width:100%;min-height:0;perspective:1600px;touch-action:pan-y;cursor:grab}
+.shelf.drag{cursor:grabbing}
+.bk{--bh:min(54vh,480px);position:absolute;left:50%;top:50%;height:var(--bh);aspect-ratio:595/842;margin:calc(var(--bh)/-2) 0 0 calc(var(--bh)*-.3533);
+  transition:transform .7s cubic-bezier(.2,.75,.15,1),filter .6s,opacity .6s;transform-style:preserve-3d;cursor:pointer;will-change:transform}
+.bk .cv{position:absolute;inset:0;border-radius:2px 5px 5px 2px;overflow:hidden;background:#24375f;
+  box-shadow:0 40px 70px -20px rgba(0,0,0,.75),0 18px 30px -12px rgba(0,0,0,.6),
+    -3px 0 0 -0.5px #f1eee7,-5px 0 0 -1px #d9d4c9,-7px 0 0 -1.5px #f1eee7,-9px 0 0 -2px #c9c3b6;
+  -webkit-box-reflect:below 6px linear-gradient(transparent 72%,rgba(255,255,255,.14))}
+.bk .cv img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.bk .cv::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(270deg,rgba(0,0,0,.35) 0,rgba(255,255,255,.18) 1.4%,rgba(0,0,0,.12) 3%,transparent 7%),linear-gradient(115deg,rgba(255,255,255,.14),transparent 38%)}
+.bk.dim{filter:brightness(.5) saturate(.8)}
+.bk.cur .cv{box-shadow:0 0 0 1px rgba(255,255,255,.18),0 0 80px rgba(95,180,240,.35),0 40px 70px -20px rgba(0,0,0,.75),-3px 0 0 -0.5px #f1eee7,-5px 0 0 -1px #d9d4c9,-7px 0 0 -1.5px #f1eee7,-9px 0 0 -2px #c9c3b6}
+.ribbon{position:absolute;top:14px;left:-8px;z-index:3;padding:6px 14px 6px 12px;font-size:12px;font-weight:600;color:#06142c;background:linear-gradient(90deg,#ffd77a,#ffc24d);border-radius:3px 12px 12px 3px;box-shadow:0 8px 18px rgba(0,0,0,.35)}
+.libinfo{position:relative;z-index:2;text-align:center;padding:0 24px calc(26px + env(safe-area-inset-bottom));min-height:150px;display:flex;flex-direction:column;align-items:center}
+.libinfo h2{font-size:22px;font-weight:600;margin:0 0 4px;transition:opacity .3s}
+.libinfo p{font-size:13.5px;color:#9fb2d6;margin:0 0 16px;min-height:20px}
+.libinfo .cta{min-width:220px;padding:0 26px}
+.libdots{display:flex;gap:7px;margin-top:16px}
+.libdots i{width:7px;height:7px;border-radius:4px;background:rgba(255,255,255,.22);transition:width .35s,background .35s}
+.libdots i.on{width:22px;background:var(--blue)}
+.libnav{position:absolute;top:50%;z-index:3;width:50px;height:50px;margin-top:-60px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.07);border:1px solid var(--line);transition:background .2s,opacity .3s}
+.libnav:hover{background:rgba(255,255,255,.15)}
+.libnav[disabled]{opacity:0;pointer-events:none}
+.libnav.older{left:max(20px,4vw)}.libnav.newer{right:max(20px,4vw)}
+.lib.leaving .bk.focus{transform:translate3d(0,0,200px) scale(1.12)!important;opacity:0}
+.lib.leaving .bk:not(.focus),.lib.leaving .libinfo,.lib.leaving .libh{opacity:0;transition:opacity .35s}
+@media (max-width:760px){ .bk{--bh:min(48vh,400px)} .libnav{display:none} .libinfo h2{font-size:19px} }
+@media (max-height:520px){ .libnav{display:none} .bk{--bh:58vh} .libh{flex-direction:row;padding-top:12px} .libh img{height:30px} .libinfo{min-height:0;padding-bottom:12px} .libinfo p{margin-bottom:8px} .libdots{display:none} }
+/* archived issue: a way back to the newest one */
+.oldbar{position:fixed;z-index:7;left:50%;top:calc(var(--bar) + 12px);transform:translateX(-50%);display:flex;gap:10px;align-items:center;padding:8px 16px;border-radius:22px;font-size:12.5px;color:#fff;text-decoration:none;
+  background:rgba(8,18,40,.78);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.oldbar b{color:#7cc4f5;font-weight:500}
+body.rails .oldbar{top:12px}
+
 /* ---------- touch devices ---------- */
 @media (hover:none),(pointer:coarse){ .nav{display:none} }
 
@@ -660,6 +706,15 @@ body.ochrome .capbar{height:52px}
 <div class="vid" id="vid" role="dialog" aria-label="مشغّل الفيديو" hidden>
   <div class="vtop"><button class="ib" id="vClose" aria-label="إغلاق الفيديو"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button><a class="ib" id="vExt" target="_blank" rel="noopener" aria-label="فتح في يوتيوب"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a></div>
   <div class="vbox" id="vBox"></div>
+</div>
+
+<!-- library of issues -->
+<div class="lib" id="lib" role="dialog" aria-label="مكتبة أعداد أضواء" hidden>
+  <div class="libh"><img src="assets/adwaa-logo.svg" alt="أضواء"><span>مكتبة الأعداد</span></div>
+  <div class="shelf" id="shelf"></div>
+  <button class="libnav older" id="libOlder" aria-label="العدد الأقدم"><svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></button>
+  <button class="libnav newer" id="libNewer" aria-label="العدد الأحدث"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button>
+  <div class="libinfo"><h2 id="libTitle"></h2><p id="libSub"></p><button class="cta pri" id="libGo">تصفّح العدد</button><div class="libdots" id="libDots"></div></div>
 </div>
 
 <!-- rating -->
@@ -1126,7 +1181,7 @@ $('#bFull').onclick = () => setImmersive(!document.body.classList.contains('imme
 }));
 
 /* ---------- home: back to the cover ---------- */
-$('#bHome').onclick = () => { closeDrawers(); closeShare && closeShare(); closeZoom(); if (visible()[0] !== 1) goTo(1); };
+$('#bHome').onclick = () => { closeDrawers(); closeShare && closeShare(); closeZoom(); if (visible()[0] !== 1) goTo(1); else if (window.Library) Library.open(); };
 
 /* ---------- resize ---------- */
 let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => {
@@ -1958,6 +2013,14 @@ window.Guess = (() => {
   if (G.img) $('#gsImg').style.backgroundImage = `url(${G.img})`;
   if (G.reveal_prev) $('#gsHint').textContent = `في العدد الماضي كانت الصورة للزميلة ${G.reveal_prev}. خمّن هذه المرة، والإجابة تُكشف في العدد القادم.`;
   if (G.hint) $('#gsHint').textContent = G.hint;
+  // next issue reveals last issue's answer: {"reveal": {"issue": "2026-q3", "name": "…"}} → «عرفه 37 من 120 قارئ»
+  if (G.reveal && G.reveal.issue && G.reveal.name && window.Stats && Stats.SB && Stats.SB.url){
+    fetch(Stats.SB.url + '/rest/v1/rpc/adwaa_guess_reveal', {method: 'POST', headers: {apikey: Stats.SB.key, 'Content-Type': 'application/json'},
+      body: JSON.stringify({p_issue: G.reveal.issue, p_answer: G.reveal.name})}).then(r => r.ok ? r.json() : null).then(r => {
+        const who = `في العدد الماضي كان الطفل ${G.reveal.name}`;
+        $('#gsHint').textContent = r && r.n ? `${who} — عرفه ${r.correct} من ${r.n} مشارك. خمّن هذه المرة!` : `${who}. خمّن هذه المرة!`;
+      }).catch(() => {});
+  }
   inp.addEventListener('input', () => { $('#gsSend').disabled = inp.value.trim().length < 2; });
   $('#gsForm').addEventListener('submit', async e => {
     e.preventDefault(); const a = inp.value.trim().replace(/\s+/g, ' '); if (a.length < 2) return;
@@ -1979,7 +2042,7 @@ window.Guess = (() => {
 /* ---------- rating at the end of the issue ---------- */
 window.Rate = (() => {
   const url = CFG.feedback_url, online = !!(window.Stats && Stats.SB && Stats.SB.url);
-  if (!url && !online) return null;
+  if (CFG.archived || (!url && !online)) return null;
   const key = 'adwaa-rate-' + CFG.id, m = $('#rate'), card = $('#rcard');
   const labels = ['', 'لم يعجبني', 'مقبول', 'جيد', 'جيد جداً', 'ممتاز!'];
   let score = 0, shown = false;
@@ -2020,10 +2083,74 @@ window.Rate = (() => {
   $('#archl').addEventListener('click', e => { const a = e.target.closest('a'); if (a) Stats.ev('archive', {c: a.dataset.id}); });
 })();
 
+
+/* =========================================================
+   LIBRARY — current issue up front, past issues beside it
+   ========================================================= */
+window.Library = (() => {
+  if (CFG.archived){   // inside a past issue: a quiet way back to the newest one
+    const a = document.createElement('a'); a.className = 'oldbar'; a.href = '../../';
+    a.innerHTML = `أرشيف · ${esc(CFG.label)} <span style="opacity:.5">|</span> <b>العدد الأحدث ←</b>`; document.body.appendChild(a);
+    return null;
+  }
+  const A = CFG.archive || []; if (!A.length) return null;
+  const L = $('#lib'), shelf = $('#shelf');
+  const items = [{id: CFG.id, label: CFG.label, cover: CFG.cover || IMG(1), cur: true}, ...A.map(a => ({...a, cur: false}))];
+  let f = 0;
+  shelf.innerHTML = items.map((b, i) => `<div class="bk${b.cur ? ' cur' : ''}" data-i="${i}" role="button" tabindex="-1" aria-label="${esc(b.label)}">
+      ${b.cur ? '<span class="ribbon">العدد الجديد</span>' : ''}<div class="cv"><img src="${esc(b.cover)}" alt="" ${i > 2 ? 'loading="lazy"' : ''} draggable="false"></div></div>`).join('');
+  $('#libDots').innerHTML = items.map(() => '<i></i>').join('');
+  const els = [...shelf.children];
+  function layout(){
+    const narrow = innerWidth < 760, gap = narrow ? innerWidth * .46 : Math.min(330, innerWidth * .2);
+    els.forEach((el, i) => {
+      const d = i - f, ad = Math.abs(d);
+      const base = items[i].cur ? 1 : .86;                         // the new issue always stands taller
+      const s = base * (d === 0 ? 1 : .74);
+      const x = -d * gap + (d === 0 ? 0 : -Math.sign(d) * (narrow ? 0 : 30));   // older issues sit to the left
+      const ry = d === 0 ? 0 : (d > 0 ? 38 : -38);
+      el.style.transform = `translate3d(${x}px,${d === 0 ? 0 : 18}px,${d === 0 ? 0 : -160}px) rotateY(${ry}deg) scale(${s})`;
+      el.style.zIndex = 100 - ad; el.style.opacity = ad > 3 ? 0 : 1;
+      el.classList.toggle('dim', d !== 0); el.classList.toggle('focus', d === 0);
+    });
+    const b = items[f];
+    $('#libTitle').textContent = b.label;
+    $('#libSub').textContent = b.cur ? `العدد الحالي · ${N} صفحة · ${(CFG.topics || []).length} موضوعاً` : 'من أرشيف أضواء';
+    $('#libGo').textContent = b.cur ? 'تصفّح العدد' : 'افتح هذا العدد';
+    $('#libDots').querySelectorAll('i').forEach((d, i) => d.classList.toggle('on', i === f));
+    $('#libNewer').disabled = f === 0; $('#libOlder').disabled = f === items.length - 1;
+  }
+  const to = i => { f = Math.max(0, Math.min(items.length - 1, i)); layout(); };
+  function go(){
+    const b = items[f];
+    if (b.cur){ L.classList.add('leaving'); setTimeout(() => { L.hidden = true; L.classList.remove('leaving'); }, 520); if (visible()[0] !== 1) goTo(1); }
+    else { if (window.Stats) Stats.ev('archive', {c: b.id}); L.classList.add('leaving'); setTimeout(() => { location.href = b.path; }, 380); }
+  }
+  $('#libGo').onclick = go;
+  $('#libOlder').onclick = () => to(f + 1); $('#libNewer').onclick = () => to(f - 1);
+  // drag / swipe between books; a tap on a side book brings it forward, on the front book opens it
+  let d0 = null, moved = false;
+  shelf.addEventListener('pointerdown', e => { d0 = {x: e.clientX, f}; moved = false; shelf.classList.add('drag'); });
+  addEventListener('pointermove', e => { if (!d0) return; const dx = e.clientX - d0.x, step = innerWidth < 760 ? 70 : 110;
+    if (Math.abs(dx) > 8) moved = true; const nf = Math.max(0, Math.min(items.length - 1, d0.f + Math.round(dx / step))); if (nf !== f) to(nf); });
+  addEventListener('pointerup', e => { if (!d0) return; shelf.classList.remove('drag'); d0 = null;
+    if (moved) return; const bk = e.target.closest && e.target.closest('.bk'); if (!bk || !shelf.contains(bk)) return;
+    const i = +bk.dataset.i; if (i === f) go(); else to(i); });
+  shelf.addEventListener('wheel', e => { if (Math.abs(e.deltaX) + Math.abs(e.deltaY) < 30) return; e.preventDefault();
+    clearTimeout(shelf._w); shelf._w = setTimeout(() => {}, 0); if (shelf._lock) return; shelf._lock = true; setTimeout(() => shelf._lock = false, 420);
+    to(f + ((e.deltaY || -e.deltaX) > 0 ? 1 : -1)); }, {passive: false});
+  document.addEventListener('keydown', e => { if (L.hidden) return; e.stopImmediatePropagation();
+    if (e.key === 'ArrowLeft') to(f + 1); else if (e.key === 'ArrowRight') to(f - 1); else if (e.key === 'Enter') go(); else if (e.key === 'Escape'){ to(0); go(); } }, true);
+  addEventListener('resize', () => { if (!L.hidden) layout(); });
+  const open = () => { to(0); L.hidden = false; };
+  return {open, get shown(){ return !L.hidden; }};
+})();
+
 /* ---------- boot ---------- */
 function hashPage(){ const m = location.hash.match(/^#page-(\d+)$/); return m ? +m[1] : 1; }
 addEventListener('hashchange', () => { const n=hashPage(); if (!visible().includes(n)) goTo(n); });
 const start = hashPage();
+if (window.Library && start === 1) Library.open();
 init(start);
 const first = pageEls[toIdx(start)].querySelector('img');
 const done = () => { $('#loader').classList.add('done'); const h=$('#hint'); h.classList.add('on'); setTimeout(()=>h.classList.remove('on'),4200); };

@@ -33,8 +33,12 @@ def log(msg):
     print('  ' + msg, flush=True)
 
 
+def arg(name):
+    return sys.argv[sys.argv.index(name) + 1] if name in sys.argv and sys.argv.index(name) + 1 < len(sys.argv) else None
+
+
 def load_issue():
-    p = ROOT / 'issue' / 'issue.json'
+    p = Path(arg('--issue')).resolve() if arg('--issue') else ROOT / 'issue' / 'issue.json'
     if not p.exists():
         sys.exit('لم أجد issue/issue.json')
     cfg = json.loads(p.read_text(encoding='utf-8'))
@@ -189,8 +193,20 @@ def make_og(cover_path, out_path, label=''):
 
 
 def main():
+    global PUB
     t0 = time.time()
     cfg_path, cfg, pdf = load_issue()
+    # a past issue rebuilt with the current template lives in public/archive/<id>/
+    archived = '--archive' in sys.argv
+    if archived:
+        PUB = ROOT / 'public' / 'archive' / cfg['id']
+        PUB.mkdir(parents=True, exist_ok=True)
+        root = ROOT / 'public'
+        for f in ('fonts',):
+            shutil.rmtree(PUB / f, ignore_errors=True); shutil.copytree(root / f, PUB / f)
+        for f in ('supabase-config.js', 'firebase-config.js', 'likes.bundle.js', 'favicon.png', 'icon-180.png'):
+            if (root / f).exists(): shutil.copy2(root / f, PUB / f)
+        if '--no-audio' not in sys.argv: sys.argv.append('--no-audio')
     print(f'\nأضواء — بناء {cfg["title"]}')
     doc = fitz.open(pdf)
     N = len(doc)
@@ -289,6 +305,7 @@ def main():
     make_og(PUB / 'hi' / 'h01.webp', PUB / 'og-cover.jpg', cfg.get('label', ''))
 
     site = (cfg.get('site_url') or 'https://PROJECT-ID.web.app').rstrip('/')
+    if archived: site += f"/archive/{cfg['id']}"
     # guess-the-colleague: the child's photo, cropped once from the page for the game card
     g = cfg.get('guess') or {}
     if g.get('photo') and (PUB / 'hi' / f"h{g['page']:02d}.webp").exists():
@@ -298,10 +315,11 @@ def main():
     # past issues (tools/archive.py) — only those whose files are really in public/archive
     reg = ROOT / 'issue' / 'archive.json'
     archive = [a for a in (json.loads(reg.read_text(encoding='utf-8')) if reg.exists() else [])
-               if a.get('id') != cfg['id'] and (PUB / a['path'] / 'index.html').exists()]
+               if a.get('id') != cfg['id'] and (ROOT / 'public' / a['path'] / 'index.html').exists()]
     if archive: log(f'الأعداد السابقة: {len(archive)}')
     issue = {'id': cfg['id'], 'number': cfg['number'], 'label': cfg['label'], 'topics': topics, 'narration': narration, 'sections': cfg.get('sections') or [],
-             'feedback_url': cfg.get('feedback_url') or '', 'guess': g or None, 'archive': archive}
+             'feedback_url': cfg.get('feedback_url') or '', 'guess': g or None, 'archive': [] if archived else archive,
+             'archived': archived, 'cover': f'pages/p01.webp'}
     data = {'w': W, 'h': H, 'pages': pages}
     tpl = (TOOLS / 'template.html').read_text(encoding='utf-8')
     lib = (TOOLS / 'vendor' / 'page-flip.patched.js').read_text(encoding='utf-8')
@@ -314,6 +332,13 @@ def main():
                .replace('__PDF__', dl)
                .replace('__SITE_URL__', site))
     (PUB / 'index.html').write_text(html, encoding='utf-8')
+    if archived:   # list it on the library shelf of the current issue
+        reg = [a for a in (json.loads(reg.read_text(encoding='utf-8')) if reg.exists() else []) if a['id'] != cfg['id']]
+        reg.append({'id': cfg['id'], 'number': cfg['number'], 'label': cfg['label'], 'path': f"archive/{cfg['id']}/", 'cover': f"archive/{cfg['id']}/pages/p01.webp"})
+        reg.sort(key=lambda a: -(a.get('number') or 0))
+        reg_path = ROOT / 'issue' / 'archive.json'
+        reg_path.write_text(json.dumps(reg, ensure_ascii=False, indent=2), encoding='utf-8')
+        log('أُضيف إلى مكتبة الأعداد (issue/archive.json) — أعد بناء العدد الحالي ليظهر على الرف')
     log(f'المواضيع: {len(topics)} · الحجم الكلي: {sum(f.stat().st_size for f in PUB.rglob("*") if f.is_file()) / 1e6:.1f} MB')
     print(f'\n✓ جاهز خلال {time.time() - t0:.0f} ثانية. للنشر:  firebase deploy\n')
 
