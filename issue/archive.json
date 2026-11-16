@@ -5,5 +5,68 @@
     "label": "العدد 10 · الربع الثاني 2026",
     "path": "archive/2026-q2/",
     "cover": "archive/2026-q2/pages/p01.webp"
+  },
+  {
+    "id": "2026-q1",
+    "number": 9,
+    "label": "العدد 9 · الربع الأول 2026",
+    "path": "archive/2026-q1/",
+    "cover": "archive/2026-q1/pages/p01.webp"
+  },
+  {
+    "id": "2025-q4",
+    "number": 8,
+    "label": "العدد 8 · الربع الرابع 2025",
+    "path": "archive/2025-q4/",
+    "cover": "archive/2025-q4/pages/p01.webp"
+  },
+  {
+    "id": "2025-q3",
+    "number": 7,
+    "label": "العدد 7 · الربع الثالث 2025",
+    "path": "archive/2025-q3/",
+    "cover": "archive/2025-q3/pages/p01.webp"
+  },
+  {
+    "id": "2025-q2",
+    "number": 6,
+    "label": "العدد 6 · الربع الثاني 2025",
+    "path": "archive/2025-q2/",
+    "cover": "archive/2025-q2/pages/p01.webp"
+  },
+  {
+    "id": "2025-q1",
+    "number": 5,
+    "label": "العدد 5 · الربع الأول 2025",
+    "path": "archive/2025-q1/",
+    "cover": "archive/2025-q1/pages/p01.webp"
+  },
+  {
+    "id": "2024-q4",
+    "number": 4,
+    "label": "العدد 4 · الربع الرابع 2024",
+    "path": "archive/2024-q4/",
+    "cover": "archive/2024-q4/pages/p01.webp"
+  },
+  {
+    "id": "2024-q3",
+    "number": 3,
+    "label": "العدد 3 · الربع الثالث 2024",
+    "path": "archive/2024-q3/",
+    "cover": "archive/2024-q3/pages/p01.webp"
+  },
+  {
+    "id": "2024-q2",
+    "number": 2,
+    "label": "العدد 2 · الربع الثاني 2024",
+    "path": "archive/2024-q2/",
+    "cover": "archive/2024-q2/pages/p01.webp"
+  },
+  {
+    "id": "2024-q1",
+    "number": 1,
+    "label": "العدد 1 · الربع الأول 2024",
+    "path": "archive/2024-q1/",
+    "cover": "archive/2024-q1/pages/p01.webp"
   }
 ]

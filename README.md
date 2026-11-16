@@ -41,6 +41,7 @@ pip install -r tools/requirements.txt
    python tools/build.py --issue issue/archive/2026-q2/issue.json --archive
    ```
    يتبني في `public/archive/<id>/` ويتسجّل في `issue/archive.json` تلقائياً. بعدها أعد بناء العدد الحالي.
+   المواضيع تُستخرج من صفحة الفهرس: `python tools/toc.py issue/archive/<id>/issue.json --write` (راجعها قبل البناء). نسخ الأعداد القديمة أخف (صور التكبير 1700px وملف تحميل مضغوط أكثر). ملفات الـPDF الأصلية للأرشيف ما ترتفع لـGitHub (أكبر من اللازم) — احتفظ فيها عندك.
    أو انسخ الموقع الحالي كما هو بدون إعادة بناء: `python tools/archive.py` — ينسخه إلى `public/archive/<id>/` ويطلع تلقائياً في «الأعداد السابقة» داخل درج الصفحات، مع شريط «العدد الأحدث ←» يرجّع القارئ للعدد الجديد.
 1. **حط الـPDF** داخل `issue/` (احذف القديم أو خلّه، ما يفرق).
 2. **عدّل `issue/issue.json`:**
@@ -63,7 +64,7 @@ pip install -r tools/requirements.txt
    python tools/build.py
    ```
    أول مرة يستخرج **المواضيع من فهرس المجلة تلقائياً** (من روابط صفحة الفهرس) ويحفظها في `issue.json`. افتح الملف وراجع العناوين: احذف كلمات الأقسام الزايدة مثل «عن الهيئة»، وأضف أي موضوع مو موجود في الفهرس. بعدها شغّل البناء مرة ثانية.
-4. **انشر:** `firebase deploy`
+4. **انشر:** `git add -A && git commit -m "العدد الجديد" && git push` — الموقع على Vercel ومربوط بالمستودع، فينشر نفسه تلقائياً خلال دقيقة (https://lmra-adhwa-magazine.vercel.app)
 
 > تعديل سريع (مثلاً تغيير عنوان موضوع أو القالب) بدون إعادة توليد الصور: `python tools/build.py --skip-images` (ثواني بدل دقايق).
 
@@ -192,7 +193,7 @@ firebase deploy
 ---
 
 ## تحديث أو تعديل لاحقاً
-لا تعدّل `public/` يدوياً لأن البناء يعيد توليدها. عدّل `issue/issue.json` أو `tools/template.html`، شغّل `python tools/build.py`، ثم `firebase deploy`.
+لا تعدّل `public/` يدوياً لأن البناء يعيد توليدها. عدّل `issue/issue.json` أو `tools/template.html`، شغّل `python tools/build.py`، ثم ارفع على GitHub (Vercel ينشر تلقائياً).
 
 ## ربط دومين خاص (اختياري)
 **Hosting ← Add custom domain** واتبع التعليمات (إضافة سجلّين DNS). شهادة SSL تنعمل تلقائياً.

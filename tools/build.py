@@ -8,7 +8,7 @@
 
 يقرأ issue/issue.json + ملف الـPDF المذكور فيه، ويولّد كل شيء داخل public/:
 صفحات المجلة، الصور المصغّرة، نسخة التكبير، البحث، الروابط، المواضيع، ملف التحميل،
-صورة المعاينة، و index.html. بعدها: firebase deploy
+صورة المعاينة، و index.html. بعدها: git push (Vercel ينشر تلقائياً)
 """
 import json, os, re, shutil, sys, time
 from pathlib import Path
@@ -207,6 +207,7 @@ def main():
         for f in ('supabase-config.js', 'firebase-config.js', 'likes.bundle.js', 'favicon.png', 'icon-180.png'):
             if (root / f).exists(): shutil.copy2(root / f, PUB / f)
         if '--no-audio' not in sys.argv: sys.argv.append('--no-audio')
+        global HI_W; HI_W = 1700          # lighter archive: zoom stays sharp, ~40% smaller
     print(f'\nأضواء — بناء {cfg["title"]}')
     doc = fitz.open(pdf)
     N = len(doc)
@@ -241,7 +242,7 @@ def main():
             pix = p.get_pixmap(matrix=fitz.Matrix(HI_W / p.rect.width, HI_W / p.rect.width), alpha=False)
             im = Image.frombytes('RGB', (pix.width, pix.height), pix.samples)
             n = f'{i + 1:02d}'
-            im.save(PUB / 'hi' / f'h{n}.webp', 'WEBP', quality=80, method=4)
+            im.save(PUB / 'hi' / f'h{n}.webp', 'WEBP', quality=72 if archived else 80, method=4)
             im.resize((PAGE_W, round(PAGE_W * im.height / im.width)), Image.LANCZOS).save(PUB / 'pages' / f'p{n}.webp', 'WEBP', quality=80, method=6)
             im.resize((THUMB_W, round(THUMB_W * im.height / im.width)), Image.LANCZOS).save(PUB / 'thumbs' / f't{n}.webp', 'WEBP', quality=75)
             print(f'\r  صفحة {i + 1}/{N}', end='', flush=True)
@@ -295,7 +296,7 @@ def main():
       log('ضغط ملف التحميل…')
       small = fitz.open(pdf)
       try:
-          small.rewrite_images(dpi_threshold=170, dpi_target=150, quality=78)
+          small.rewrite_images(dpi_threshold=130 if archived else 170, dpi_target=110 if archived else 150, quality=66 if archived else 78)
           small.subset_fonts()
       except Exception as e:
           log(f'(تخطّي الضغط: {e})')
@@ -340,7 +341,7 @@ def main():
         reg_path.write_text(json.dumps(reg, ensure_ascii=False, indent=2), encoding='utf-8')
         log('أُضيف إلى مكتبة الأعداد (issue/archive.json) — أعد بناء العدد الحالي ليظهر على الرف')
     log(f'المواضيع: {len(topics)} · الحجم الكلي: {sum(f.stat().st_size for f in PUB.rglob("*") if f.is_file()) / 1e6:.1f} MB')
-    print(f'\n✓ جاهز خلال {time.time() - t0:.0f} ثانية. للنشر:  firebase deploy\n')
+    print(f'\n✓ جاهز خلال {time.time() - t0:.0f} ثانية. للنشر: ارفع التغييرات لـGitHub (git push) وVercel ينشرها تلقائياً خلال دقيقة\n')
 
 
 if __name__ == '__main__':
