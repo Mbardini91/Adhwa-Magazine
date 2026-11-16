@@ -105,6 +105,41 @@ def draft_topics(pages, n_pages):
     return topics
 
 
+def page_photos(doc, page, pi, W, H, words, originals, out_dir, seen):
+    """Tappable photos of a page: original file when matched (issue/originals), else a sharp crop of the PDF."""
+    area_page = W * H; out = []; boxes = []
+    for info in page.get_image_info(xrefs=True):
+        bb = fitz.Rect(info['bbox']) & page.rect
+        if not info['xref'] or bb.is_empty or bb.width < 70 or bb.height < 70: continue   # xref 0 = inline masks/frames
+        a = bb.width * bb.height / area_page
+        if a > .55 or a < .012: continue                      # full-bleed backgrounds / tiny ornaments
+        if any(abs(bb.x0 - b.x0) < 2 and abs(bb.y0 - b.y0) < 2 and abs(bb.x1 - b.x1) < 2 for b in boxes): continue
+        boxes.append(bb); x = info['xref']
+        name = f'x{x}.webp' if x else f'p{pi + 1}-{len(out)}.webp'
+        if x in originals:
+            src = ROOT / 'issue' / 'originals' / name
+            if name not in seen: shutil.copy(src, out_dir / name)
+            o = originals[x]; wpx, hpx, orig = o['w'], o['h'], 1
+        else:
+            name = f'p{pi + 1}-{len(out)}.webp'
+            z = max(1.4, min(3.0, (info.get('width') or bb.width) / bb.width * 1.15))
+            pix = page.get_pixmap(matrix=fitz.Matrix(z, z), clip=bb, alpha=False)
+            im = Image.frombytes('RGB', (pix.width, pix.height), pix.samples)
+            im.thumbnail((1800, 1800), Image.LANCZOS); im.save(out_dir / name, 'WEBP', quality=80, method=4)
+            wpx, hpx, orig = im.width, im.height, 0
+        seen.add(name)
+        # caption: short text laid on / just under the photo (names under portraits)
+        cap = []
+        for w in words:
+            cx, cy = (w[1] + w[3] / 2) * W, (w[2] + w[4] / 2) * H
+            if bb.x0 - 2 <= cx <= bb.x1 + 2 and bb.y1 - .3 * bb.height <= cy <= bb.y1 + 26: cap.append(w)
+        cap = ' '.join(w[0] for w in cap) if 0 < len(cap) <= 9 else ''
+        if re.fullmatch(r'[\d\s.|\-–]*', cap): cap = ''
+        out.append({'b': [round(bb.x0 / W, 4), round(bb.y0 / H, 4), round(bb.width / W, 4), round(bb.height / H, 4)],
+                    's': 'photos/' + name, 'w': wpx, 'h': hpx, 'o': orig, 'c': cap})
+    return out
+
+
 def make_og(cover_path, out_path):
     W, H = 1200, 630
     bg = Image.new('RGB', (W, H), '#0b1630')
@@ -153,6 +188,16 @@ def main():
         log(f'{N} صفحة — تجهيز الصور…')
     else:
         log(f'{N} صفحة — الصور موجودة، تخطّيت إعادة توليدها (--skip-images)')
+    orig_path = ROOT / 'issue' / 'originals.json'
+    originals = {}
+    if orig_path.exists():
+        oj = json.loads(orig_path.read_text(encoding='utf-8'))
+        if oj.get('pdf') == cfg['pdf']:
+            originals = {m['xref']: m for m in oj['matches'] if (ROOT / 'issue' / 'originals' / f"x{m['xref']}.webp").exists()}
+        else:
+            log('⚠️ issue/originals.json لعدد آخر — شغّل tools/originals.py لهذا العدد')
+    shutil.rmtree(PUB / 'photos', ignore_errors=True); (PUB / 'photos').mkdir(parents=True)
+    seen_photos = set()
     pages = []
     for i, p in enumerate(doc):
         if not skip_img:
@@ -164,9 +209,16 @@ def main():
             im.resize((THUMB_W, round(THUMB_W * im.height / im.width)), Image.LANCZOS).save(PUB / 'thumbs' / f't{n}.webp', 'WEBP', quality=75)
             print(f'\r  صفحة {i + 1}/{N}', end='', flush=True)
         words = page_words(p, W, H)
-        pages.append({'links': resolve_links(doc, p, W, H, names), 'words': words, 'say': speech.segments(words)})
+        pages.append({'links': resolve_links(doc, p, W, H, names), 'words': words, 'say': speech.segments(words),
+                      'photos': page_photos(doc, p, i, W, H, words, originals, PUB / 'photos', seen_photos)})
     if not skip_img:
         print()
+    nph = sum(len(p['photos']) for p in pages); nor = sum(1 for p in pages for x in p['photos'] if x['o'])
+    log(f'الصور القابلة للفتح: {nph} (منها {nor} من الملفات الأصلية)')
+    # brand + issue assets
+    shutil.rmtree(PUB / 'assets', ignore_errors=True)
+    if (ROOT / 'issue' / 'assets').exists(): shutil.copytree(ROOT / 'issue' / 'assets', PUB / 'assets')
+    (PUB / 'assets').mkdir(exist_ok=True); shutil.copy(TOOLS / 'brand' / 'adwaa-logo.svg', PUB / 'assets' / 'adwaa-logo.svg')
     nlinks = sum(len(p['links']) for p in pages)
     nwords = sum(len(p['words']) for p in pages)
     log(f'الروابط: {nlinks} · الكلمات القابلة للبحث: {nwords}')
@@ -216,7 +268,7 @@ def main():
     make_og(PUB / 'hi' / 'h01.webp', PUB / 'og-cover.jpg')
 
     site = (cfg.get('site_url') or 'https://PROJECT-ID.web.app').rstrip('/')
-    issue = {'id': cfg['id'], 'number': cfg['number'], 'label': cfg['label'], 'topics': topics, 'narration': narration}
+    issue = {'id': cfg['id'], 'number': cfg['number'], 'label': cfg['label'], 'topics': topics, 'narration': narration, 'sections': cfg.get('sections') or []}
     data = {'w': W, 'h': H, 'pages': pages}
     tpl = (TOOLS / 'template.html').read_text(encoding='utf-8')
     lib = (TOOLS / 'vendor' / 'page-flip.patched.js').read_text(encoding='utf-8')

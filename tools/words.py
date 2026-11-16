@@ -3,6 +3,7 @@ Per line: glyph clusters sorted by visual x (right→left for Arabic lines), LTR
 (digits / Latin) restored, lam-alef ligatures repaired, kashida removed."""
 import re, unicodedata
 AL = 'اأإآ'
+PRES = re.compile('[\uFB50-\uFDFF\uFE70-\uFEFF]')
 MARK = re.compile('[ً-ٰٟۖ-ۭ]')
 AR = re.compile('[؀-ۿݐ-ݿﭐ-﷿ﹰ-﻿]')
 def is_ltr(c):
@@ -11,15 +12,29 @@ def page_words(p, W, H):
     words = []
     for bi, b in enumerate(p.get_text('rawdict')['blocks']):
         for li, l in enumerate(b.get('lines', [])):
-            chars = [c for s in l['spans'] for c in s['chars'] if c['c'] != 'ـ']
+            chars = [c for s in l['spans'] for c in s['chars']]
             if not chars: continue
             arabic = any(AR.match(c['c']) for c in chars)
-            # clusters: base + following combining marks (stream order)
-            cl = []
+            # phantom spaces: InDesign sometimes emits a space *inside* a glyph (next to an unmapped
+            # ligature, U+FFFD). A real word gap never overlaps a glyph, so drop those.
+            glyphs = [c['bbox'] for c in chars if not c['c'].isspace() and c['bbox'][2] - c['bbox'][0] > .05]
+            def phantom(c):
+                x0, x1 = c['bbox'][0], c['bbox'][2]; w = max(x1 - x0, .01)
+                return any(min(x1, g[2]) - max(x0, g[0]) > .5 * w for g in glyphs)
+            # clusters: base + following combining marks; a mark goes to the last real letter
+            # (never to a kashida, a space or an unmapped glyph)
+            cl, last = [], None
             for c in chars:
-                if MARK.match(c['c']) and cl: cl[-1]['t'] += c['c']; continue
+                ch = c['c']
+                if MARK.match(ch):
+                    if last is not None: last['t'] += ch
+                    continue
+                if ch in 'ـ�': continue
+                if ch.isspace() and phantom(c): continue
                 x0, y0, x1, y1 = c['bbox']
-                cl.append({'t': c['c'], 'x0': x0, 'x1': x1, 'y0': y0, 'y1': y1, 'cx': (x0 + x1) / 2})
+                k = {'t': ch, 'x0': x0, 'x1': x1, 'y0': y0, 'y1': y1, 'cx': (x0 + x1) / 2}
+                cl.append(k)
+                if not ch.isspace(): last = k
             if arabic:
                 cl.sort(key=lambda k: -k['cx'])
                 # restore LTR runs (digits/latin, with inner . , : - / % between them)
@@ -46,6 +61,8 @@ def page_words(p, W, H):
             def flush():
                 if not cur: return
                 t = ''.join(k['t'] for k in cur).strip()
+                if AR.search(t): t = re.sub('[\u0100-\u024F\u02B0-\u02FF]', '', t)   # stray Latin glyph stand-ins inside Arabic words
+                t = PRES.sub(lambda m: unicodedata.normalize('NFKC', m.group()), t)   # presentation forms (ﺗﻌﺮف) → letters
                 if t:
                     x0 = min(k['x0'] for k in cur); x1 = max(k['x1'] for k in cur)
                     y0 = min(k['y0'] for k in cur); y1 = max(k['y1'] for k in cur)
