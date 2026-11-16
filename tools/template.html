@@ -426,6 +426,75 @@ body.insec .sectag{opacity:1;transform:translate(-50%,0)}
 body.rails .sectag{top:12px}
 body.ochrome .sectag{display:none}
 
+
+/* =========================================================
+   PAST ISSUES — strip at the top of the pages drawer
+   ========================================================= */
+.arch{padding:0 16px 14px;border-bottom:1px solid var(--line);margin-bottom:12px}
+.arch h4{font-size:12px;font-weight:500;color:var(--mute);margin:0 0 10px}
+.archl{display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.archl a{flex:0 0 92px;display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--ink);text-decoration:none;line-height:1.4}
+.archl img{width:92px;aspect-ratio:595/842;object-fit:cover;border-radius:4px;box-shadow:0 8px 20px rgba(0,0,0,.4);transition:transform .25s}
+.archl a:hover img{transform:translateY(-3px)}
+/* =========================================================
+   RATING — appears once the reader reaches the back cover
+   ========================================================= */
+.rate{position:fixed;inset:0;z-index:57;display:grid;place-items:center;padding:20px;background:rgba(4,9,22,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:fade .35s}
+.rate[hidden]{display:none}
+.rcard{position:relative;width:min(400px,100%);padding:30px 26px 22px;border-radius:22px;text-align:center;background:linear-gradient(160deg,#16326a,#0c1a3a 70%);border:1px solid rgba(255,255,255,.14);box-shadow:0 40px 90px rgba(0,0,0,.55);animation:rise .5s cubic-bezier(.2,.8,.2,1)}
+@keyframes rise{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
+.rcard .x{position:absolute;top:12px;left:12px}
+.rcard .logo{height:46px;margin:0 auto 14px;display:block}
+.rcard h3{font-size:19px;font-weight:600;margin:0 0 6px}
+.rcard p{font-size:13.5px;color:#b9c7e2;margin:0 0 18px;line-height:1.7}
+.stars{display:flex;justify-content:center;gap:6px;margin-bottom:6px}
+.stars button{width:44px;height:44px;display:grid;place-items:center;border-radius:12px;transition:transform .15s,background .2s}
+.stars button:hover{background:rgba(255,255,255,.06)}
+.stars button:active{transform:scale(.88)}
+.stars svg{width:30px;height:30px;fill:none;stroke:#5d6f94;stroke-width:1.6;transition:fill .2s,stroke .2s}
+.stars button.on svg{fill:#ffc94d;stroke:#ffc94d}
+.slab{height:18px;font-size:12px;color:#ffd77a;margin-bottom:12px}
+.rcard textarea{width:100%;min-height:76px;resize:none;padding:11px 13px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--ink);font:inherit;font-size:13.5px;outline:none;margin-bottom:14px;display:none}
+.rcard textarea:focus{border-color:rgba(95,180,240,.6)}
+.rcard.picked textarea{display:block;animation:fade .3s}
+.racts{display:flex;flex-direction:column;gap:8px}
+.cta{display:flex;align-items:center;justify-content:center;gap:8px;height:46px;border-radius:13px;font-weight:500;font-size:14.5px;text-decoration:none;transition:background .2s,opacity .2s}
+.cta.pri{background:var(--blue);color:#06142c}.cta.pri:hover{background:#7cc4f5}
+.cta.pri[disabled]{opacity:.35;pointer-events:none}
+.cta.sec{color:var(--ink);background:rgba(255,255,255,.06);border:1px solid var(--line)}.cta.sec:hover{background:rgba(255,255,255,.11)}
+.cta svg{width:16px;height:16px}
+.rdone{display:none}.rcard.done .rform{display:none}.rcard.done .rdone{display:block;animation:fade .4s}
+.rdone .big{font-size:42px;line-height:1;margin:6px 0 10px}
+/* =========================================================
+   GUESS THE COLLEAGUE — the empty box on the page becomes a game
+   ========================================================= */
+.gq{position:absolute;z-index:4;container-type:size;display:flex;align-items:center;justify-content:center;gap:4%;cursor:pointer;background:#e3e4e1;color:#1d2433;transition:background .25s,box-shadow .25s;overflow:hidden}
+.gq:hover{background:#d9dbd6;box-shadow:inset 0 0 0 2px #0e89ca}
+.gq span{font-size:min(34cqh,9.2cqw);font-weight:500;white-space:nowrap}
+.gq svg{width:min(40cqh,10cqw);height:min(40cqh,10cqw);flex:none;stroke:currentColor;fill:none;stroke-width:2}
+.gq::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,.7) 50%,transparent 65%);transform:translateX(-120%);animation:shine 3.2s 1.2s ease-in-out infinite}
+@keyframes shine{0%,55%{transform:translateX(-120%)}85%,100%{transform:translateX(120%)}}
+.gq.done{background:#e6f2ea;color:#0f5132}.gq.done::after{display:none}
+.gm{position:fixed;inset:0;z-index:57;display:grid;place-items:center;padding:20px;background:rgba(4,9,22,.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:fade .3s}
+.gm[hidden]{display:none}
+.gcard{position:relative;width:min(420px,100%);border-radius:22px;overflow:hidden;background:#fff;color:#1d2433;box-shadow:0 40px 90px rgba(0,0,0,.55);animation:rise .5s cubic-bezier(.2,.8,.2,1)}
+.gimg{height:250px;background:#ddd center 22%/cover no-repeat;position:relative}
+.gimg::after{content:"؟";position:absolute;left:18px;bottom:-26px;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:#e2177b;color:#fff;font-size:30px;font-weight:600;box-shadow:0 10px 24px rgba(226,23,123,.4)}
+.gcard .x{position:absolute;top:10px;left:10px;z-index:2;background:rgba(0,0,0,.4);color:#fff}
+.gbody{padding:24px 24px 22px}
+.gbody h3{font-size:19px;margin:0 0 4px;font-weight:600}
+.gbody p{font-size:13.5px;color:#5b6475;margin:0 0 16px;line-height:1.7}
+.gin{display:flex;gap:8px}
+.gin input{flex:1;min-width:0;height:48px;padding:0 14px;border-radius:12px;border:1.5px solid #d6d9e0;font:inherit;font-size:15px;color:#1d2433;outline:none;background:#f7f8fa}
+.gin input:focus{border-color:#0e89ca;background:#fff}
+.gin button{height:48px;padding:0 20px;border-radius:12px;background:#1d2433;color:#fff;font-weight:500}
+.gin button[disabled]{opacity:.3}
+.gmeta{font-size:12.5px;color:#7a8394;margin-top:12px;min-height:18px}
+.gok{display:none;text-align:center;padding:4px 0}
+.gcard.done .gin{display:none}.gcard.done .gok{display:block;animation:fade .4s}
+.gok b{display:block;font-size:22px;margin:4px 0 6px;color:#0f5132}
+.gok button{margin-top:10px;font-size:13px;color:#0e89ca;text-decoration:underline;text-underline-offset:3px}
+
 /* ---------- touch devices ---------- */
 @media (hover:none),(pointer:coarse){ .nav{display:none} }
 
@@ -549,6 +618,7 @@ body.ochrome .capbar{height:52px}
 </aside>
 <aside class="drawer" id="dThumbs" aria-label="الصفحات">
   <div class="dh"><h3>كل الصفحات</h3><button class="ib" data-close aria-label="إغلاق"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="arch" id="arch" hidden><h4>الأعداد السابقة</h4><div class="archl" id="archl"></div></div>
   <div class="thumbs" id="thumbs"></div>
 </aside>
 
@@ -590,6 +660,45 @@ body.ochrome .capbar{height:52px}
 <div class="vid" id="vid" role="dialog" aria-label="مشغّل الفيديو" hidden>
   <div class="vtop"><button class="ib" id="vClose" aria-label="إغلاق الفيديو"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button><a class="ib" id="vExt" target="_blank" rel="noopener" aria-label="فتح في يوتيوب"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a></div>
   <div class="vbox" id="vBox"></div>
+</div>
+
+<!-- rating -->
+<div class="rate" id="rate" role="dialog" aria-label="تقييم العدد" hidden>
+  <div class="rcard" id="rcard">
+    <button class="ib x" id="rClose" aria-label="إغلاق"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <img class="logo" src="assets/adwaa-logo.svg" alt="أضواء">
+    <div class="rform">
+      <h3>وصلت لنهاية العدد 👏</h3>
+      <p>كيف كانت تجربتك مع هذا العدد؟ رأيك يساعدنا نطوّر «أضواء».</p>
+      <div class="stars" id="stars"></div>
+      <div class="slab" id="slab"></div>
+      <textarea id="rText" maxlength="500" placeholder="ملاحظة أو اقتراح (اختياري)"></textarea>
+      <div class="racts">
+        <button class="cta pri" id="rSend" disabled>إرسال التقييم</button>
+        <a class="cta sec" id="rForm" target="_blank" rel="noopener">استبيان مفصّل <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
+      </div>
+    </div>
+    <div class="rdone">
+      <div class="big">💙</div>
+      <h3>شكراً لك!</h3>
+      <p id="rThanks">وصلنا تقييمك.</p>
+      <div class="racts"><a class="cta sec" id="rForm2" target="_blank" rel="noopener">عندك وقت أكثر؟ الاستبيان المفصّل</a></div>
+    </div>
+  </div>
+</div>
+<!-- guess the colleague -->
+<div class="gm" id="gm" role="dialog" aria-label="هل تستطيع التعرف على زميلك؟" hidden>
+  <div class="gcard" id="gcard">
+    <button class="ib x" id="gsClose" aria-label="إغلاق"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <div class="gimg" id="gsImg"></div>
+    <div class="gbody">
+      <h3>من هو القرصان الصغير؟</h3>
+      <p id="gsHint">خمّن اسم الزميل، والإجابة تُكشف في العدد القادم.</p>
+      <form class="gin" id="gsForm" autocomplete="off"><input id="gsIn" maxlength="60" placeholder="اكتب اسم الزميل…" enterkeyhint="send"><button id="gsSend" disabled>إرسال</button></form>
+      <div class="gok"><div>✓ تم تسجيل تخمينك</div><b id="gsMine"></b><span id="gsCount"></span><br><button id="gsEdit">تعديل التخمين</button></div>
+      <div class="gmeta" id="gsMeta"></div>
+    </div>
+  </div>
 </div>
 
 <!-- share sheet -->
@@ -639,6 +748,21 @@ const toIdx = n => N - n;          // original page (1-based) -> flip index (RTL
 const toNum = i => N - i;
 
 /* ---------- build pages ---------- */
+function guessEl(n){
+  const G = CFG.guess, f = document.createDocumentFragment();
+  if (!G || G.page !== n || !G.box) return f;
+  const e = document.createElement('div'); e.className = 'gq'; e.id = 'gq'; e.setAttribute('role', 'button'); e.tabIndex = 0;
+  const [x,y,w,h] = G.box; Object.assign(e.style, {left: x*100+'%', top: y*100+'%', width: w*100+'%', height: h*100+'%'});
+  e.innerHTML = '<svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg><span>' + (G.prompt || 'اكتب اسم الزميل') + '</span>';
+  // the page must not turn when the reader taps the box
+  // the page must not turn when the reader taps the box: keep every press/release inside it
+  let p0 = null;
+  ['pointerdown','mousedown','touchstart'].forEach(ev => e.addEventListener(ev, x => { x.stopPropagation(); if (ev === 'pointerdown') p0 = {x: x.clientX, y: x.clientY}; }));
+  ['mouseup','touchend','click'].forEach(ev => e.addEventListener(ev, x => { x.stopPropagation(); if (ev === 'touchend' && x.cancelable) x.preventDefault(); }));
+  e.addEventListener('pointerup', x => { x.stopPropagation(); if (p0 && Math.hypot(x.clientX - p0.x, x.clientY - p0.y) < 12) window.Guess && Guess.open(); p0 = null; });
+  e.addEventListener('keydown', x => { if (x.key === 'Enter' || x.key === ' '){ x.preventDefault(); window.Guess && Guess.open(); } });
+  f.appendChild(e); return f;
+}
 function photoEls(n){
   const f = document.createDocumentFragment();
   (DATA.pages[n-1].photos || []).forEach((ph, k) => {
@@ -709,7 +833,7 @@ function buildBook(){
     img.dataset.src = IMG(n);
     const hl = document.createElement('div'); hl.className = 'hl';
     const sh = document.createElement('div'); sh.className = 'shade';
-    d.append(img, sh, hl, photoEls(n), linkEls(d, n));
+    d.append(img, sh, hl, photoEls(n), linkEls(d, n), guessEl(n));
     book.appendChild(d); pageEls.push(d);
   }
   return pageEls;
@@ -810,6 +934,7 @@ function onFlip(){
   if (window.renderTopics) renderTopics(v);
   if (window.TTS) TTS.onFlip(v);
   if (window.applySection) applySection(v);
+  if (window.Rate) Rate.check(v);
   if (window.Stats){ Stats.open(first); Stats.view(v); }
 }
 
@@ -834,7 +959,7 @@ function preloadAround(n){ for (let k=Math.max(1,n-3);k<=Math.min(N,n+3);k++){ c
 document.addEventListener('keydown', e => {
   if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase() === 'f'){ e.preventDefault(); openDrawer('dSearch'); return; }
   if (e.key === 'Escape'){ if ($('#zoom').classList.contains('open')) closeZoom(); else closeDrawers(); return; }
-  if (e.target.tagName === 'INPUT') return;
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if ($('#zoom').classList.contains('open')) return;
   if (e.key === 'ArrowLeft' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); fwd(); }
   else if (e.key === 'ArrowRight' || e.key === 'PageUp') { e.preventDefault(); back(); }
@@ -1806,6 +1931,93 @@ const SECTIONS = CFG.sections || [];
     const im = tag.querySelector('img'); if (s.symbol){ im.src = s.symbol; im.hidden = false; } else im.hidden = true;
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', s.deep || '#0b1630');
   };
+})();
+
+
+/* =========================================================
+   READER RESPONSES (Supabase: adwaa_respond) — guess + rating
+   ========================================================= */
+const respond = (kind, answer, score) => {
+  const SB = window.Stats && Stats.SB; if (!SB || !SB.url) return Promise.reject(new Error('offline'));
+  return fetch(SB.url + '/rest/v1/rpc/adwaa_respond', {method: 'POST', headers: {apikey: SB.key, 'Content-Type': 'application/json'},
+    body: JSON.stringify({p_issue: CFG.id, p_visitor: Stats.visitor, p_kind: kind, p_answer: answer || null, p_score: score || null})})
+    .then(r => r.ok ? r.json() : Promise.reject(new Error(r.status)));
+};
+const LS = {get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }, set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }};
+const arNum = n => n === 1 ? 'زميل واحد' : n === 2 ? 'زميلان' : n <= 10 ? n + ' زملاء' : n + ' زميلاً';
+
+/* ---------- guess the colleague ---------- */
+window.Guess = (() => {
+  const G = CFG.guess; if (!G) return null;
+  const key = 'adwaa-guess-' + CFG.id, m = $('#gm'), card = $('#gcard'), inp = $('#gsIn');
+  const paint = () => {
+    const mine = LS.get(key); card.classList.toggle('done', !!mine);
+    if (mine){ $('#gsMine').textContent = '«' + mine.a + '»'; $('#gsCount').textContent = mine.n ? 'خمّن معك ' + arNum(mine.n) + ' حتى الآن' : ''; }
+    const box = $('#gq'); if (box){ box.classList.toggle('done', !!mine); box.querySelector('span').textContent = mine ? '✓ خمّنت: ' + mine.a : (G.prompt || 'اكتب اسم الزميل'); }
+  };
+  if (G.img) $('#gsImg').style.backgroundImage = `url(${G.img})`;
+  if (G.reveal_prev) $('#gsHint').textContent = `في العدد الماضي كانت الصورة للزميلة ${G.reveal_prev}. خمّن هذه المرة، والإجابة تُكشف في العدد القادم.`;
+  if (G.hint) $('#gsHint').textContent = G.hint;
+  inp.addEventListener('input', () => { $('#gsSend').disabled = inp.value.trim().length < 2; });
+  $('#gsForm').addEventListener('submit', async e => {
+    e.preventDefault(); const a = inp.value.trim().replace(/\s+/g, ' '); if (a.length < 2) return;
+    $('#gsSend').disabled = true; $('#gsMeta').textContent = 'جارٍ الإرسال…';
+    try{ const r = await respond('guess', a); LS.set(key, {a, n: r && r.n}); $('#gsMeta').textContent = ''; paint(); }
+    catch(err){
+      if (G.email){ location.href = `mailto:${G.email}?subject=${encodeURIComponent('تخمين «هل تستطيع التعرف على زميلك؟» · ' + CFG.label)}&body=${encodeURIComponent('تخميني: ' + a)}`; LS.set(key, {a}); paint(); $('#gsMeta').textContent = ''; }
+      else { $('#gsMeta').textContent = 'تعذّر الإرسال، حاول مرة ثانية.'; $('#gsSend').disabled = false; }
+    }
+  });
+  $('#gsEdit').onclick = () => { const mine = LS.get(key); card.classList.remove('done'); inp.value = mine ? mine.a : ''; $('#gsSend').disabled = !inp.value; inp.focus(); };
+  const close = () => { m.hidden = true; };
+  $('#gsClose').onclick = close; m.addEventListener('click', e => { if (e.target === m) close(); });
+  document.addEventListener('keydown', e => { if (!m.hidden){ if (e.key === 'Escape') close(); e.stopImmediatePropagation(); } }, true);
+  setTimeout(paint, 0);
+  return {open(){ paint(); m.hidden = false; if (!card.classList.contains('done')) setTimeout(() => inp.focus({preventScroll: true}), 350); }, paint};
+})();
+
+/* ---------- rating at the end of the issue ---------- */
+window.Rate = (() => {
+  const url = CFG.feedback_url, online = !!(window.Stats && Stats.SB && Stats.SB.url);
+  if (!url && !online) return null;
+  const key = 'adwaa-rate-' + CFG.id, m = $('#rate'), card = $('#rcard');
+  const labels = ['', 'لم يعجبني', 'مقبول', 'جيد', 'جيد جداً', 'ممتاز!'];
+  let score = 0, shown = false;
+  if (url){ $('#rForm').href = url; $('#rForm2').href = url; } else { $('#rForm').remove(); $('#rForm2').parentElement.remove(); }
+  if (!online){ $('#stars').remove(); $('#slab').remove(); $('#rSend').remove(); card.querySelector('.rform p').textContent = 'شاركنا ملاحظاتك وأفكارك لتطوير المجلة.'; }
+  const star = '<svg viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z" stroke-linejoin="round"/></svg>';
+  const S = $('#stars'); if (S) for (let i = 1; i <= 5; i++){ const b = document.createElement('button'); b.innerHTML = star; b.setAttribute('aria-label', i + ' من 5'); b.dataset.v = i; S.appendChild(b); }
+  const paint = v => { S && S.querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.v <= v)); if ($('#slab')) $('#slab').textContent = labels[v] || ''; };
+  if (S){
+    S.addEventListener('mouseover', e => { const b = e.target.closest('button'); if (b) paint(+b.dataset.v); });
+    S.addEventListener('mouseleave', () => paint(score));
+    S.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; score = +b.dataset.v; paint(score); card.classList.add('picked'); $('#rSend').disabled = false; });
+  }
+  $('#rSend') && ($('#rSend').onclick = async () => {
+    $('#rSend').disabled = true; $('#rSend').textContent = 'جارٍ الإرسال…';
+    try{ await respond('rating', $('#rText').value.trim(), score); } catch(e){}
+    LS.set(key, {s: score}); card.classList.add('done'); $('#rThanks').textContent = score >= 4 ? 'سعداء إن العدد عجبك.' : 'ملاحظتك وصلت، وبنشتغل عليها.';
+  });
+  const close = () => { m.hidden = true; try{ sessionStorage.setItem(key, '1'); }catch(e){} };
+  $('#rClose').onclick = close; m.addEventListener('click', e => { if (e.target === m) close(); });
+  document.addEventListener('keydown', e => { if (!m.hidden){ if (e.key === 'Escape') close(); else if (e.target.tagName !== 'TEXTAREA') e.stopImmediatePropagation(); } }, true);
+  $('#rForm') && $('#rForm').addEventListener('click', () => Stats.ev('link', {c: 'feedback-form', p: N}));
+  return {
+    check(v){
+      if (shown || !v.some(n => n >= N - 1) || LS.get(key)) return;
+      try{ if (sessionStorage.getItem(key)) return; }catch(e){}
+      shown = true;
+      setTimeout(() => { if (visible().some(n => n >= N - 1) && !overlayOpen() && $('#lb').hidden && $('#vid').hidden) m.hidden = false; else shown = false; }, 1400);
+    }
+  };
+})();
+
+/* ---------- past issues ---------- */
+(() => {
+  const A = CFG.archive || []; if (!A.length) return;
+  $('#arch').hidden = false;
+  $('#archl').innerHTML = A.map(a => `<a href="${esc(a.path)}" data-id="${esc(a.id)}"><img src="${esc(a.cover)}" alt="" loading="lazy"><span>${esc(a.label)}</span></a>`).join('');
+  $('#archl').addEventListener('click', e => { const a = e.target.closest('a'); if (a) Stats.ev('archive', {c: a.dataset.id}); });
 })();
 
 /* ---------- boot ---------- */

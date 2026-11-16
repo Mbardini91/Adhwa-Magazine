@@ -140,30 +140,49 @@ def page_photos(doc, page, pi, W, H, words, originals, out_dir, seen):
     return out
 
 
-def make_og(cover_path, out_path):
+def make_og(cover_path, out_path, label=''):
+    """Share card (WhatsApp/LinkedIn/X): issue cover + the أضواء logotype + issue label."""
+    import numpy as np
     W, H = 1200, 630
-    bg = Image.new('RGB', (W, H), '#0b1630')
-    grad = Image.linear_gradient('L').rotate(-60, expand=True).resize((W, H))
-    bg = Image.composite(Image.new('RGB', (W, H), '#13264f'), bg, grad)
-    glow = Image.new('L', (W, H), 0)
-    ImageDraw.Draw(glow).ellipse((-100, -80, 760, 640), fill=70)
-    bg = Image.composite(Image.new('RGB', (W, H), '#3a7bbf'), bg, glow.filter(ImageFilter.GaussianBlur(120)))
+    y, x = np.mgrid[0:H, 0:W].astype('f4'); x /= W; y /= H
+    t = np.clip(.55 * x + .45 * (1 - y), 0, 1)[..., None]
+    c = (1 - t) * np.array([8, 19, 46]) + t * np.array([26, 58, 126])
+    g = np.exp(-(((x - .2) / .45) ** 2 + ((y - .45) / .6) ** 2))[..., None]
+    c = c * (1 - .5 * g) + np.array([60, 140, 210]) * .5 * g
+    bg = Image.fromarray(c.clip(0, 255).astype('uint8'), 'RGB')
     cov = Image.open(cover_path).convert('RGB')
-    ch = 520; cw = round(cov.width * ch / cov.height)
+    ch = 530; cw = round(cov.width * ch / cov.height)
     cov = cov.resize((cw, ch), Image.LANCZOS)
     sh = Image.new('L', (cw + 120, ch + 120), 0)
-    ImageDraw.Draw(sh).rectangle((60, 75, cw + 60, ch + 75), fill=150)
+    ImageDraw.Draw(sh).rectangle((60, 75, cw + 60, ch + 75), fill=160)
     sh = sh.filter(ImageFilter.GaussianBlur(26))
-    cx = 110
+    cx = 100
     bg.paste((3, 8, 20), (cx - 60, (H - ch) // 2 - 60), sh)
     bg.paste(cov, (cx, (H - ch) // 2))
+    right = W - 90
+    logo = ROOT / 'tools' / 'brand' / 'adwaa-logo.png'
+    if logo.exists():
+        L = Image.open(logo).convert('RGBA'); L = L.crop(L.getbbox())
+        lw = 400; L = L.resize((lw, round(lw * L.height / L.width)), Image.LANCZOS)
+        bg.paste(L, (right - lw, 70), L)
+        ty = 70 + L.height + 40
+    else:
+        ty = 260
     if features.check('raqm'):
         try:
-            f = ImageFont.truetype(str(PUB / 'fonts' / 'plex-arabic-600.woff2'), 128)
             d = ImageDraw.Draw(bg)
-            d.text((W - 96, 250), 'أضواء', font=f, fill='white', anchor='rs', direction='rtl')
-            f2 = ImageFont.truetype(str(PUB / 'fonts' / 'plex-arabic-400.woff2'), 34)
-            d.text((W - 96, 330), 'تصفّح العدد تفاعلياً', font=f2, fill='#c9d4ea', anchor='rs', direction='rtl')
+            f = ImageFont.truetype(str(PUB / 'fonts' / 'plex-arabic-500.woff2'), 38)
+            if label:   # the Arabic web font is subset (no digits): lay runs right-to-left, digits in the Latin face
+                fl = ImageFont.truetype(str(PUB / 'fonts' / 'plex-latin-500.woff2'), 38)
+                x = right
+                for run in re.findall(r'[0-9A-Za-z·.\-–]+|[^0-9A-Za-z·.\-–]+', label):
+                    lat = bool(re.match(r'[0-9A-Za-z·.\-–]', run))
+                    fnt = fl if lat else f
+                    w = d.textlength(run, font=fnt, direction=None if lat else 'rtl')
+                    d.text((x, ty + 38), run, font=fnt, fill='white', anchor='rs', direction=None if lat else 'rtl')
+                    x -= w
+            f2 = ImageFont.truetype(str(PUB / 'fonts' / 'plex-arabic-400.woff2'), 28)
+            d.text((right, ty + 92), 'تصفّح العدد تفاعلياً', font=f2, fill='#b9c9e6', anchor='rs', direction='rtl')
         except Exception:
             pass
     bg.save(out_path, 'JPEG', quality=88)
@@ -198,6 +217,8 @@ def main():
             log('⚠️ issue/originals.json لعدد آخر — شغّل tools/originals.py لهذا العدد')
     shutil.rmtree(PUB / 'photos', ignore_errors=True); (PUB / 'photos').mkdir(parents=True)
     seen_photos = set()
+    # topics with "photos": false (e.g. honour-roll portraits) don't open photos full screen
+    no_photo_pages = {n for tp in cfg.get('topics', []) if tp.get('photos') is False for n in range(tp['s'], tp['e'] + 1)}
     pages = []
     for i, p in enumerate(doc):
         if not skip_img:
@@ -210,7 +231,7 @@ def main():
             print(f'\r  صفحة {i + 1}/{N}', end='', flush=True)
         words = page_words(p, W, H)
         pages.append({'links': resolve_links(doc, p, W, H, names), 'words': words, 'say': speech.segments(words),
-                      'photos': page_photos(doc, p, i, W, H, words, originals, PUB / 'photos', seen_photos)})
+                      'photos': [] if (i + 1) in no_photo_pages else page_photos(doc, p, i, W, H, words, originals, PUB / 'photos', seen_photos)})
     if not skip_img:
         print()
     nph = sum(len(p['photos']) for p in pages); nor = sum(1 for p in pages for x in p['photos'] if x['o'])
@@ -265,10 +286,22 @@ def main():
       small.ez_save(PUB / dl, garbage=4, deflate=True)
       log(f'{dl}: {os.path.getsize(PUB / dl) / 1e6:.1f} MB (الأصلي {os.path.getsize(pdf) / 1e6:.1f} MB)')
 
-    make_og(PUB / 'hi' / 'h01.webp', PUB / 'og-cover.jpg')
+    make_og(PUB / 'hi' / 'h01.webp', PUB / 'og-cover.jpg', cfg.get('label', ''))
 
     site = (cfg.get('site_url') or 'https://PROJECT-ID.web.app').rstrip('/')
-    issue = {'id': cfg['id'], 'number': cfg['number'], 'label': cfg['label'], 'topics': topics, 'narration': narration, 'sections': cfg.get('sections') or []}
+    # guess-the-colleague: the child's photo, cropped once from the page for the game card
+    g = cfg.get('guess') or {}
+    if g.get('photo') and (PUB / 'hi' / f"h{g['page']:02d}.webp").exists():
+        im = Image.open(PUB / 'hi' / f"h{g['page']:02d}.webp"); x, y, w, h = g['photo']
+        im.crop((round(x * im.width), round(y * im.height), round((x + w) * im.width), round((y + h) * im.height))).save(PUB / 'photos' / 'guess.webp', 'WEBP', quality=85)
+        g = dict(g, img='photos/guess.webp')
+    # past issues (tools/archive.py) — only those whose files are really in public/archive
+    reg = ROOT / 'issue' / 'archive.json'
+    archive = [a for a in (json.loads(reg.read_text(encoding='utf-8')) if reg.exists() else [])
+               if a.get('id') != cfg['id'] and (PUB / a['path'] / 'index.html').exists()]
+    if archive: log(f'الأعداد السابقة: {len(archive)}')
+    issue = {'id': cfg['id'], 'number': cfg['number'], 'label': cfg['label'], 'topics': topics, 'narration': narration, 'sections': cfg.get('sections') or [],
+             'feedback_url': cfg.get('feedback_url') or '', 'guess': g or None, 'archive': archive}
     data = {'w': W, 'h': H, 'pages': pages}
     tpl = (TOOLS / 'template.html').read_text(encoding='utf-8')
     lib = (TOOLS / 'vendor' / 'page-flip.patched.js').read_text(encoding='utf-8')

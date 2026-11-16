@@ -29,7 +29,8 @@
       "id": "outstanding",
       "s": 14,
       "e": 17,
-      "t": "متميزون"
+      "t": "متميزون",
+      "photos": false
     },
     {
       "id": "inspiring",
@@ -127,5 +128,25 @@
       "pattern": "assets/forum-pattern.svg",
       "symbol": "assets/forum-symbol.svg"
     }
-  ]
+  ],
+  "feedback_url": "https://forms.cloud.microsoft/r/T31wP5DTWt",
+  "guess": {
+    "page": 72,
+    "box": [
+      0.633,
+      0.873,
+      0.296,
+      0.058
+    ],
+    "prompt": "اكتب اسم الزميل",
+    "reveal_prev": "فاطمة الهاشلي",
+    "photo": [
+      0.07,
+      0.566,
+      0.406,
+      0.365
+    ],
+    "email": "corpcomm@lmra.gov.bh"
+  },
+  "archive": []
 }
