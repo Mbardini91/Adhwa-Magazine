@@ -146,12 +146,13 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border:0;border-radiu
 /* zoom */
 .zoom{position:fixed;inset:0;z-index:50;background:rgba(6,12,28,.97);display:none}
 .zoom.open{display:block}
-.zbar{position:absolute;top:0;left:0;right:0;height:var(--bar);display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:2;background:linear-gradient(rgba(6,12,28,.95),rgba(6,12,28,0))}
+.zbar{position:absolute;top:0;left:0;right:0;height:64px;padding-top:env(safe-area-inset-top);display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:3;background:linear-gradient(rgba(6,12,28,.95),rgba(6,12,28,0))}
 .zbar .zl{display:flex;gap:6px;align-items:center}
 .zbar .zv{font-size:12px;color:var(--mute);min-width:44px;text-align:center}
-.zsc{position:absolute;inset:0;overflow:auto;cursor:grab}
+.zsc{position:absolute;inset:0;z-index:1;overflow:auto;cursor:grab;direction:ltr;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .zsc.drag{cursor:grabbing}
-.zin{display:flex;flex-direction:row;gap:0;margin:var(--bar) auto 40px;width:max-content;padding:0 40px}
+.zin{display:flex;flex-direction:row-reverse;gap:0;margin:0 auto;width:max-content;padding:76px 40px 40px;box-sizing:content-box}
+.zp{direction:rtl}
 .zp{position:relative;background:#fff;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .zp img{display:block;width:100%;height:100%;-webkit-user-drag:none}
 
@@ -1138,18 +1139,22 @@ function openZoom(){
   $('#zoom').classList.add('open'); zl = 1; applyZoom(true);
 }
 function applyZoom(center){
-  const v = $('#zin').children.length;
-  const fitH = innerHeight - 64 - 40, fitW = (innerWidth - 80) / v;
+  const s = $('#zsc'), v = $('#zin').children.length;
+  // keep the point at the centre of the screen where it is while the scale changes
+  const cx = (s.scrollLeft + s.clientWidth / 2) / (s.scrollWidth || 1), cy = (s.scrollTop + s.clientHeight / 2) / (s.scrollHeight || 1);
+  const fitH = innerHeight - 76 - 40, fitW = (innerWidth - 80) / v;
   const base = Math.min(fitW, fitH / RATIO);
   const w = Math.round(base * zl);
   [...$('#zin').children].forEach(d=>{ d.style.width=w+'px'; d.style.height=Math.round(w*RATIO)+'px'; });
   $('#zVal').textContent = Math.round(zl*100)+'%';
-  if (center){ const s=$('#zsc'); s.scrollTop=0; s.scrollLeft=(s.scrollWidth-s.clientWidth)/2*(document.dir==='rtl'?-1:1); }
+  if (center){ s.scrollTop = 0; s.scrollLeft = (s.scrollWidth - s.clientWidth) / 2; }
+  else { s.scrollLeft = cx * s.scrollWidth - s.clientWidth / 2; s.scrollTop = cy * s.scrollHeight - s.clientHeight / 2; }
 }
 function closeZoom(){ $('#zoom').classList.remove('open'); }
 $('#bZoom').onclick = openZoom; $('#zClose').onclick = closeZoom;
 $('#zIn').onclick = () => { zl = Math.min(3, +(zl+.5).toFixed(1)); applyZoom(); };
 $('#zOut').onclick = () => { zl = Math.max(1, +(zl-.5).toFixed(1)); applyZoom(); };
+addEventListener('resize', () => { if ($('#zoom').classList.contains('open')) applyZoom(); });
 $('#book').addEventListener?.('dblclick', openZoom);
 document.addEventListener('dblclick', e => { if (e.target.closest('#book')) openZoom(); });
 (() => { // drag to pan
