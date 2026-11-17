@@ -823,6 +823,9 @@ function guessEl(n){
   let p0 = null;
   ['pointerdown','mousedown','touchstart'].forEach(ev => e.addEventListener(ev, x => { x.stopPropagation(); if (ev === 'pointerdown') p0 = {x: x.clientX, y: x.clientY}; }));
   ['mouseup','touchend','click'].forEach(ev => e.addEventListener(ev, x => { x.stopPropagation(); if (ev === 'touchend' && x.cancelable) x.preventDefault(); }));
+  e.addEventListener('mousemove', x => x.stopPropagation());
+  e.addEventListener('mouseenter', () => { const r = e.parentElement.getBoundingClientRect();   // fold any corner peek away from the box
+    e.parentElement.dispatchEvent(new MouseEvent('mousemove', {bubbles: true, clientX: r.left + r.width / 2, clientY: r.top + r.height / 2})); });
   e.addEventListener('pointerup', x => { x.stopPropagation(); if (p0 && Math.hypot(x.clientX - p0.x, x.clientY - p0.y) < 12) window.Guess && Guess.open(); p0 = null; });
   e.addEventListener('keydown', x => { if (x.key === 'Enter' || x.key === ' '){ x.preventDefault(); window.Guess && Guess.open(); } });
   f.appendChild(e); return f;

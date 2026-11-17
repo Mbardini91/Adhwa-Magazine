@@ -235,6 +235,7 @@ def main():
     shutil.rmtree(PUB / 'photos', ignore_errors=True); (PUB / 'photos').mkdir(parents=True)
     seen_photos = set()
     # topics with "photos": false (e.g. honour-roll portraits) don't open photos full screen
+    no_link_pages = {n for tp in cfg.get('topics', []) if tp.get('links') is False for n in range(tp['s'], tp['e'] + 1)}
     no_photo_pages = {n for tp in cfg.get('topics', []) if tp.get('photos') is False for n in range(tp['s'], tp['e'] + 1)}
     pages = []
     for i, p in enumerate(doc):
@@ -247,7 +248,7 @@ def main():
             im.resize((THUMB_W, round(THUMB_W * im.height / im.width)), Image.LANCZOS).save(PUB / 'thumbs' / f't{n}.webp', 'WEBP', quality=75)
             print(f'\r  صفحة {i + 1}/{N}', end='', flush=True)
         words = page_words(p, W, H)
-        pages.append({'links': resolve_links(doc, p, W, H, names), 'words': words, 'say': speech.segments(words),
+        pages.append({'links': [] if (i + 1) in no_link_pages else resolve_links(doc, p, W, H, names), 'words': words, 'say': speech.segments(words),
                       'photos': [] if (i + 1) in no_photo_pages else page_photos(doc, p, i, W, H, words, originals, PUB / 'photos', seen_photos)})
     if not skip_img:
         print()

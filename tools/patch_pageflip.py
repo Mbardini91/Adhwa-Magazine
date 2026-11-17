@@ -22,5 +22,11 @@ rep('userStop(t,e=!1){this.isUserTouch&&(this.isUserTouch=!1,e||(this.isUserMove
 rep('stopMove(){if(null===this.calc)return;const t=this.calc.getPosition(),e=this.getBoundsRect(),i="bottom"===this.calc.getCorner()?e.height:0;t.x<=0?',
     'stopMove(f=0){if(null===this.calc)return;const t=this.calc.getPosition(),e=this.getBoundsRect(),i="bottom"===this.calc.getCorner()?e.height:0,d=this.calc.getDirection(),P="portrait"===this.render.getOrientation()?(0===d?e.pageWidth/2:-e.pageWidth/2):0;(0!==f?0===d?f<0:f>0:t.x<=P)?')
 rep('if(t.x-e.pageWidth<=e.width/5)return 1', 'if(t.x-e.pageWidth<=e.pageWidth/2)return 1')
+# 4) Hover peek (desktop): a small fold right at the corner, not a big flap over the page content
+rep('showCorner(t){if(!this.checkState("read","fold_corner"))return;const e=this.getBoundsRect(),i=e.pageWidth;if(this.isPointOnCorners(t))',
+    'showCorner(t){if(!this.checkState("read","fold_corner"))return;const e=this.getBoundsRect(),i=e.pageWidth;if(this.isPointOnCorners(t,14))')
+rep('const s=50,n="bottom"===this.calc.getCorner()', 'const s=34,n="bottom"===this.calc.getCorner()')
+rep('isPointOnCorners(t){const e=this.getBoundsRect(),i=e.pageWidth,s=Math.sqrt(Math.pow(i,2)+Math.pow(e.height,2))/5,',
+    'isPointOnCorners(t,k=5){const e=this.getBoundsRect(),i=e.pageWidth,s=Math.sqrt(Math.pow(i,2)+Math.pow(e.height,2))/k,')
 open(out, 'w', encoding='utf-8').write(s)
 print('patched ok')
