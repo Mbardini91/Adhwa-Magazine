@@ -149,5 +149,7 @@
     ],
     "email": "corpcomm@lmra.gov.bh"
   },
-  "archive": []
+  "archive": [],
+  "intro": "assets/intro.mp4",
+  "intro_poster": "assets/intro-poster.jpg"
 }
