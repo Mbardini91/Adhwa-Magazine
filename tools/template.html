@@ -2212,7 +2212,7 @@ window.Library = (() => {
     const apply = () => {
       tab = t; items = SH[t]; f = Math.max(0, Math.min(items.length - 1, focus));
       L.classList.toggle('her', t === HER);
-      $('#libKicker').textContent = t === HER ? 'أضواؤها · ملحق يوم المرأة البحرينية' : 'مكتبة الأعداد';
+      $('#libKicker').textContent = 'مكتبة الأعداد';
       tabs.querySelectorAll('button').forEach(b => b.setAttribute('aria-selected', b.dataset.s === t));
       const on = tabs.querySelector(`[data-s="${t}"]`), pill = tabs.querySelector('i');
       if (!tabs.hidden && on.offsetWidth){ pill.style.left = on.offsetLeft + 'px'; pill.style.width = on.offsetWidth + 'px'; }
@@ -2237,9 +2237,9 @@ window.Library = (() => {
       el.classList.toggle('dim', d !== 0); el.classList.toggle('focus', d === 0);
     });
     const b = items[f];
-    $('#libTitle').textContent = b.label;
+    $('#libTitle').textContent = tab === HER ? 'أضواؤها' : b.label;
     $('#libSub').textContent = b.here ? `العدد الحالي · ${N} صفحة · ${(CFG.topics || []).length} موضوعاً`
-      : tab === HER ? 'إصدار خاص يصدر كل ديسمبر' : 'من أرشيف أضواء';
+      : tab === HER ? 'ملحق خاص بيوم المرأة البحرينية' : 'من أرشيف أضواء';
     $('#libGo').textContent = b.here ? 'تصفّح العدد' : tab === HER ? 'تصفّح الإصدار' : 'افتح هذا العدد';
     $('#libDots').querySelectorAll('i').forEach((d, i) => d.classList.toggle('on', i === f));
     $('#libNewer').disabled = f === 0; $('#libOlder').disabled = f === items.length - 1;
