@@ -1,23 +1,56 @@
 {
+  "redirects": [
+    {
+      "source": "/adwaaha",
+      "destination": "/?shelf=adwaaha",
+      "permanent": false
+    },
+    {
+      "source": "/adwaaha/:year(\\d{4})",
+      "destination": "/archive/adwaaha-:year/",
+      "permanent": false
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
       ]
     },
     {
       "source": "/(pages|hi|thumbs|photos|assets|fonts)/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
     },
     {
       "source": "/archive/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=2592000, stale-while-revalidate=2592000" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=2592000, stale-while-revalidate=2592000"
+        }
+      ]
     },
     {
       "source": "/(.*)\\.html",
-      "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ]
     }
   ]
 }

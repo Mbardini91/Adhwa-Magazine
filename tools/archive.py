@@ -26,7 +26,7 @@ def register(meta, dest):
     reg = [r for r in load_reg() if r['id'] != meta['id']]
     rel = dest.relative_to(PUB).as_posix() + '/'
     reg.append({'id': meta['id'], 'number': meta.get('number'), 'label': meta['label'], 'path': rel, 'cover': rel + 'pages/p01.webp'})
-    reg.sort(key=lambda r: -(r.get('number') or 0))
+    reg.sort(key=lambda r: (bool(r.get('series')) and r['series'] != 'adwaa', r.get('series') or '', -(r.get('number') or 0)))
     REG.write_text(json.dumps(reg, ensure_ascii=False, indent=2), encoding='utf-8')
 
 

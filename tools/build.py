@@ -29,6 +29,16 @@ import speech  # noqa: E402
 PAGE_W, HI_W, THUMB_W = 1100, 2200, 200
 
 
+def series(cfg):
+    """'adwaa' = the quarterly issues; 'adwaaha' = أضواؤها, the yearly Bahraini Women's Day special."""
+    return cfg.get('series') or 'adwaa'
+
+
+def reg_order(a):
+    """Library order: quarterly issues first, newest first; then each special series, newest first."""
+    return (series(a) != 'adwaa', series(a), -(a.get('number') or 0))
+
+
 def log(msg):
     print('  ' + msg, flush=True)
 
@@ -319,7 +329,7 @@ def main():
     archive = [a for a in (json.loads(reg.read_text(encoding='utf-8')) if reg.exists() else [])
                if a.get('id') != cfg['id'] and (ROOT / 'public' / a['path'] / 'index.html').exists()]
     if archive: log(f'الأعداد السابقة: {len(archive)}')
-    issue = {'id': cfg['id'], 'number': cfg['number'], 'label': cfg['label'], 'topics': topics, 'narration': narration, 'sections': cfg.get('sections') or [],
+    issue = {'id': cfg['id'], 'series': series(cfg), 'number': cfg['number'], 'label': cfg['label'], 'topics': topics, 'narration': narration, 'sections': cfg.get('sections') or [],
              'feedback_url': cfg.get('feedback_url') or '', 'guess': g or None, 'archive': [] if archived else archive,
              'archived': archived, 'intro': cfg.get('intro') or '', 'intro_poster': cfg.get('intro_poster') or '', 'cover': f'pages/p01.webp'}
     data = {'w': W, 'h': H, 'pages': pages}
@@ -336,8 +346,11 @@ def main():
     (PUB / 'index.html').write_text(html, encoding='utf-8')
     if archived:   # list it on the library shelf of the current issue
         reg = [a for a in (json.loads(reg.read_text(encoding='utf-8')) if reg.exists() else []) if a['id'] != cfg['id']]
-        reg.append({'id': cfg['id'], 'number': cfg['number'], 'label': cfg['label'], 'path': f"archive/{cfg['id']}/", 'cover': f"archive/{cfg['id']}/pages/p01.webp"})
-        reg.sort(key=lambda a: -(a.get('number') or 0))
+        entry = {'id': cfg['id'], 'number': cfg['number'], 'label': cfg['label'], 'path': f"archive/{cfg['id']}/", 'cover': f"archive/{cfg['id']}/pages/p01.webp"}
+        if series(cfg) != 'adwaa': entry['series'] = series(cfg)
+        if cfg.get('feature'): entry['feature'] = cfg['feature']
+        reg.append(entry)
+        reg.sort(key=reg_order)
         reg_path = ROOT / 'issue' / 'archive.json'
         reg_path.write_text(json.dumps(reg, ensure_ascii=False, indent=2), encoding='utf-8')
         log('أُضيف إلى مكتبة الأعداد (issue/archive.json) — أعد بناء العدد الحالي ليظهر على الرف')

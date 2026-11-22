@@ -68,5 +68,17 @@
     "label": "العدد 1 · الربع الأول 2024",
     "path": "archive/2024-q1/",
     "cover": "archive/2024-q1/pages/p01.webp"
+  },
+  {
+    "id": "adwaaha-2024",
+    "number": 2024,
+    "label": "أضواؤها · يوم المرأة البحرينية 2024",
+    "path": "archive/adwaaha-2024/",
+    "cover": "archive/adwaaha-2024/pages/p01.webp",
+    "series": "adwaaha",
+    "feature": {
+      "from": "2024-11-25",
+      "to": "2024-12-31"
+    }
   }
 ]

@@ -519,7 +519,7 @@ body.ochrome .sectag{display:none}
 .bk .cv::after{content:"";position:absolute;inset:0;pointer-events:none;
   background:linear-gradient(270deg,rgba(0,0,0,.35) 0,rgba(255,255,255,.18) 1.4%,rgba(0,0,0,.12) 3%,transparent 7%),linear-gradient(115deg,rgba(255,255,255,.14),transparent 38%)}
 .bk.dim{filter:brightness(.5) saturate(.8)}
-.bk.cur .cv{box-shadow:0 0 0 1px rgba(255,255,255,.18),0 0 80px rgba(95,180,240,.35),0 40px 70px -20px rgba(0,0,0,.75),-3px 0 0 -0.5px #f1eee7,-5px 0 0 -1px #d9d4c9,-7px 0 0 -1.5px #f1eee7,-9px 0 0 -2px #c9c3b6}
+.bk.lead .cv{box-shadow:0 0 0 1px rgba(255,255,255,.18),0 0 80px rgba(95,180,240,.35),0 40px 70px -20px rgba(0,0,0,.75),-3px 0 0 -0.5px #f1eee7,-5px 0 0 -1px #d9d4c9,-7px 0 0 -1.5px #f1eee7,-9px 0 0 -2px #c9c3b6}
 .ribbon{position:absolute;top:14px;left:-8px;z-index:3;padding:6px 14px 6px 12px;font-size:12px;font-weight:600;color:#06142c;background:linear-gradient(90deg,#ffd77a,#ffc24d);border-radius:3px 12px 12px 3px;box-shadow:0 8px 18px rgba(0,0,0,.35)}
 .libinfo{position:relative;z-index:2;text-align:center;padding:0 24px calc(26px + env(safe-area-inset-bottom));min-height:150px;display:flex;flex-direction:column;align-items:center}
 .libinfo h2{font-size:22px;font-weight:600;margin:0 0 4px;transition:opacity .3s}
@@ -536,6 +536,27 @@ body.ochrome .sectag{display:none}
 .lib.leaving .bk:not(.focus),.lib.leaving .libinfo,.lib.leaving .libh{opacity:0;transition:opacity .35s}
 @media (max-width:760px){ .bk{--bh:min(48vh,400px)} .libnav{display:none} .libinfo h2{font-size:19px} }
 @media (max-height:520px){ .libnav{display:none} .bk{--bh:58vh} .libh{flex-direction:row;padding-top:12px} .libh img{height:30px} .libinfo{min-height:0;padding-bottom:12px} .libinfo p{margin-bottom:8px} .libdots{display:none} }
+/* two shelves: the quarterly issues · أضواؤها (the yearly Bahraini Women's Day special) */
+.libtabs{position:relative;display:flex;gap:2px;margin-top:10px;padding:3px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
+.libtabs[hidden]{display:none}
+.libtabs button{position:relative;z-index:1;padding:6px 16px;border-radius:16px;font-size:13px;color:#9fb2d6;transition:color .3s}
+.libtabs button[aria-selected=true]{color:#06142c;font-weight:600}
+.libtabs i{position:absolute;top:3px;bottom:3px;border-radius:16px;background:var(--blue);transition:left .45s cubic-bezier(.2,.75,.15,1),width .45s cubic-bezier(.2,.75,.15,1),background .55s}
+.lib::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:0;transition:opacity .7s ease;
+  background:radial-gradient(1100px 620px at 50% 38%,#5a4320 0%,#2a1d0c 55%,#120c05 100%)}
+.lib.her::after{opacity:1}
+.lib.her::before{background:radial-gradient(50% 60% at 50% 0%,rgba(224,201,160,.16),transparent 70%)}
+.lib.her .libh span,.lib.her .libinfo p,.lib.her .libtabs button{color:#d9c49c}
+.lib.her .libtabs button[aria-selected=true]{color:#1d1406}
+.lib.her .libtabs i,.lib.her .libdots i.on{background:#d9b878}
+.lib.her .cta.pri{background:#d9b878;color:#1d1406}
+.lib.her .bk.lead .cv{box-shadow:0 0 0 1px rgba(255,236,200,.22),0 0 80px rgba(217,184,120,.35),0 40px 70px -20px rgba(0,0,0,.75),-3px 0 0 -0.5px #f1eee7,-5px 0 0 -1px #d9d4c9,-7px 0 0 -1.5px #f1eee7,-9px 0 0 -2px #c9c3b6}
+.ribbon.gold{background:linear-gradient(90deg,#f3dfb4,#d9b878);color:#1d1406}
+.shelf.swap{opacity:0;transform:scale(.97);transition:opacity .28s,transform .28s}
+.shelf{transition:opacity .4s,transform .4s}
+/* inside an أضواؤها edition: the series' gold replaces the blue accent */
+body.s-adwaaha{--blue:#d9b878}
+body.s-adwaaha .oldbar b{color:#e9cf9a}
 /* archived issue: a way back to the newest one */
 .oldbar{position:fixed;z-index:7;left:50%;top:calc(var(--bar) + 12px);transform:translateX(-50%);display:flex;gap:10px;align-items:center;padding:8px 16px;border-radius:22px;font-size:12.5px;color:#fff;text-decoration:none;
   background:rgba(8,18,40,.78);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,.35)}
@@ -745,7 +766,7 @@ body.ochrome .capbar{height:52px}
 
 <!-- library of issues -->
 <div class="lib" id="lib" role="dialog" aria-label="مكتبة أعداد أضواء" hidden>
-  <div class="libh"><img src="assets/adwaa-logo.svg" alt="أضواء"><span>مكتبة الأعداد</span><button class="replay" id="libReplay" hidden><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>شاهد الفيديو التعريفي</button></div>
+  <div class="libh"><img src="assets/adwaa-logo.svg" alt="أضواء"><span id="libKicker">مكتبة الأعداد</span><div class="libtabs" id="libTabs" role="tablist" hidden><i></i><button role="tab" data-s="adwaa" aria-selected="true">أضواء</button><button role="tab" data-s="adwaaha" aria-selected="false">أضواؤها</button></div><button class="replay" id="libReplay" hidden><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>شاهد الفيديو التعريفي</button></div>
   <div class="shelf" id="shelf"></div>
   <button class="libnav older" id="libOlder" aria-label="العدد الأقدم"><svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></button>
   <button class="libnav newer" id="libNewer" aria-label="العدد الأحدث"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button>
@@ -1238,7 +1259,7 @@ function askLibrary(){
 (() => {
   const m = $('#ask'), close = () => { m.hidden = true; };
   $('#askNo').onclick = close; m.addEventListener('click', e => { if (e.target === m) close(); });
-  $('#askYes').onclick = () => { close(); if (CFG.archived) location.href = '../../'; else if (window.Library) Library.open(); };
+  $('#askYes').onclick = () => { close(); if (CFG.archived) location.href = HOME_URL; else if (window.Library) Library.open(); };
   document.addEventListener('keydown', e => { if (m.hidden) return; e.stopImmediatePropagation(); if (e.key === 'Escape') close(); }, true);
 })();
 $('#bHome').onclick = () => { closeDrawers(); closeShare && closeShare(); closeZoom(); if (visible()[0] !== 1) goTo(1); else if (CFG.archived || window.Library) askLibrary(); };
@@ -2144,28 +2165,70 @@ window.Rate = (() => {
 })();
 
 
+const HOME_URL = '../../' + (CFG.series === 'adwaaha' ? '?shelf=adwaaha' : '');
+if (CFG.series && CFG.series !== 'adwaa') document.body.classList.add('s-' + CFG.series);
+
 /* =========================================================
    LIBRARY — current issue up front, past issues beside it
    ========================================================= */
 window.Library = (() => {
-  if (CFG.archived){   // inside a past issue: a quiet way back to the newest one
-    const a = document.createElement('a'); a.className = 'oldbar'; a.href = '../../';
-    a.innerHTML = `أرشيف · ${esc(CFG.label)} <span style="opacity:.5">|</span> <b>العدد الأحدث ←</b>`; document.body.appendChild(a);
+  const HER = 'adwaaha';
+  if (CFG.archived){   // inside a past issue (or an أضواؤها edition): a quiet way back to the library
+    const a = document.createElement('a'); a.className = 'oldbar'; a.href = HOME_URL;
+    a.innerHTML = CFG.series === HER ? `${esc(CFG.label)} <span style="opacity:.5">|</span> <b>مكتبة أضواء ←</b>`
+                                     : `أرشيف · ${esc(CFG.label)} <span style="opacity:.5">|</span> <b>العدد الأحدث ←</b>`;
+    document.body.appendChild(a);
     return null;
   }
   const A = CFG.archive || []; if (!A.length) return null;
   const L = $('#lib'), shelf = $('#shelf');
-  const items = [{id: CFG.id, label: CFG.label, cover: CFG.cover || IMG(1), cur: true}, ...A.map(a => ({...a, cur: false}))];
-  let f = 0;
-  shelf.innerHTML = items.map((b, i) => `<div class="bk${b.cur ? ' cur' : ''}" data-i="${i}" role="button" tabindex="-1" aria-label="${esc(b.label)}">
-      ${b.cur ? '<span class="ribbon">العدد الجديد</span>' : ''}<div class="cv"><img src="${esc(b.cover)}" alt="" ${i > 2 ? 'loading="lazy"' : ''} draggable="false"></div></div>`).join('');
-  $('#libDots').innerHTML = items.map(() => '<i></i>').join('');
-  const els = [...shelf.children];
+  // two shelves: the quarterly issues (the one on this page up front) · أضواؤها editions, newest first
+  const SH = {
+    adwaa: [{id: CFG.id, label: CFG.label, cover: CFG.cover || IMG(1), here: true, lead: true}, ...A.filter(a => (a.series || 'adwaa') !== HER).map(a => ({...a}))],
+    [HER]: A.filter(a => a.series === HER).map((a, i) => ({...a, lead: i === 0}))
+  };
+  // in its season (issue.json → "feature": {"from", "to"}) an أضواؤها edition is what the reader lands on
+  const today = new Date().toLocaleDateString('en-CA', {timeZone: 'Asia/Bahrain'});
+  const inSeason = a => a.feature && a.feature.from <= today && today <= a.feature.to;
+  const seasonal = SH[HER].findIndex(inSeason);
+  const asked = new URLSearchParams(location.search).get('shelf');
+  const home = () => (asked === HER && SH[HER].length) || seasonal >= 0 ? HER : 'adwaa';
+  let tab = 'adwaa', items = SH.adwaa, els = [], f = 0;
+  const tabs = $('#libTabs');
+  if (SH[HER].length) tabs.hidden = false;
+  function ribbon(b, i){
+    if (b.here) return '<span class="ribbon">العدد الجديد</span>';
+    if (tab === HER && (seasonal >= 0 ? i === seasonal : b.lead)) return '<span class="ribbon gold">إصدار خاص</span>';
+    return '';
+  }
+  function fill(){
+    shelf.innerHTML = items.map((b, i) => `<div class="bk${b.lead ? ' lead' : ''}" data-i="${i}" role="button" tabindex="-1" aria-label="${esc(b.label)}">
+      ${ribbon(b, i)}<div class="cv"><img src="${esc(b.cover)}" alt="" ${i > 2 ? 'loading="lazy"' : ''} draggable="false"></div></div>`).join('');
+    $('#libDots').innerHTML = items.map(() => '<i></i>').join('');
+    els = [...shelf.children];
+  }
+  function setTab(t, focus = 0, animate = false){
+    if (!SH[t] || !SH[t].length) t = 'adwaa';
+    const apply = () => {
+      tab = t; items = SH[t]; f = Math.max(0, Math.min(items.length - 1, focus));
+      L.classList.toggle('her', t === HER);
+      $('#libKicker').textContent = t === HER ? 'أضواؤها · ملحق يوم المرأة البحرينية' : 'مكتبة الأعداد';
+      tabs.querySelectorAll('button').forEach(b => b.setAttribute('aria-selected', b.dataset.s === t));
+      const on = tabs.querySelector(`[data-s="${t}"]`), pill = tabs.querySelector('i');
+      if (!tabs.hidden && on.offsetWidth){ pill.style.left = on.offsetLeft + 'px'; pill.style.width = on.offsetWidth + 'px'; }
+      fill(); layout();
+    };
+    if (!animate || t === tab) return apply();
+    shelf.classList.add('swap'); setTimeout(() => { apply(); requestAnimationFrame(() => shelf.classList.remove('swap')); }, 260);
+  }
+  tabs.addEventListener('click', e => { const b = e.target.closest('button'); if (!b || b.dataset.s === tab) return;
+    if (window.Stats) Stats.ev('shelf', {c: b.dataset.s});
+    setTab(b.dataset.s, b.dataset.s === HER ? Math.max(0, seasonal) : 0, true); });
   function layout(){
     const narrow = innerWidth < 760, gap = narrow ? innerWidth * .46 : Math.min(330, innerWidth * .2);
     els.forEach((el, i) => {
       const d = i - f, ad = Math.abs(d);
-      const base = items[i].cur ? 1 : .86;                         // the new issue always stands taller
+      const base = items[i].lead ? 1 : .86;                         // the newest of each shelf always stands taller
       const s = base * (d === 0 ? 1 : .74);
       const x = -d * gap + (d === 0 ? 0 : -Math.sign(d) * (narrow ? 0 : 30));   // older issues sit to the left
       const ry = d === 0 ? 0 : (d > 0 ? 38 : -38);
@@ -2175,15 +2238,16 @@ window.Library = (() => {
     });
     const b = items[f];
     $('#libTitle').textContent = b.label;
-    $('#libSub').textContent = b.cur ? `العدد الحالي · ${N} صفحة · ${(CFG.topics || []).length} موضوعاً` : 'من أرشيف أضواء';
-    $('#libGo').textContent = b.cur ? 'تصفّح العدد' : 'افتح هذا العدد';
+    $('#libSub').textContent = b.here ? `العدد الحالي · ${N} صفحة · ${(CFG.topics || []).length} موضوعاً`
+      : tab === HER ? 'إصدار خاص يصدر كل ديسمبر' : 'من أرشيف أضواء';
+    $('#libGo').textContent = b.here ? 'تصفّح العدد' : tab === HER ? 'تصفّح الإصدار' : 'افتح هذا العدد';
     $('#libDots').querySelectorAll('i').forEach((d, i) => d.classList.toggle('on', i === f));
     $('#libNewer').disabled = f === 0; $('#libOlder').disabled = f === items.length - 1;
   }
   const to = i => { f = Math.max(0, Math.min(items.length - 1, i)); layout(); };
   function go(){
     const b = items[f];
-    if (b.cur){ L.classList.add('leaving'); setTimeout(() => { L.hidden = true; L.classList.remove('leaving'); }, 520); if (visible()[0] !== 1) goTo(1); }
+    if (b.here){ L.classList.add('leaving'); setTimeout(() => { L.hidden = true; L.classList.remove('leaving'); }, 520); if (visible()[0] !== 1) goTo(1); }
     else { if (window.Stats) Stats.ev('archive', {c: b.id}); L.classList.add('leaving'); setTimeout(() => { location.href = b.path; }, 380); }
   }
   $('#libGo').onclick = go;
@@ -2197,12 +2261,13 @@ window.Library = (() => {
     if (moved) return; const bk = e.target.closest && e.target.closest('.bk'); if (!bk || !shelf.contains(bk)) return;
     const i = +bk.dataset.i; if (i === f) go(); else to(i); });
   shelf.addEventListener('wheel', e => { if (Math.abs(e.deltaX) + Math.abs(e.deltaY) < 30) return; e.preventDefault();
-    clearTimeout(shelf._w); shelf._w = setTimeout(() => {}, 0); if (shelf._lock) return; shelf._lock = true; setTimeout(() => shelf._lock = false, 420);
+    if (shelf._lock) return; shelf._lock = true; setTimeout(() => shelf._lock = false, 420);
     to(f + ((e.deltaY || -e.deltaX) > 0 ? 1 : -1)); }, {passive: false});
   document.addEventListener('keydown', e => { if (L.hidden) return; e.stopImmediatePropagation();
-    if (e.key === 'ArrowLeft') to(f + 1); else if (e.key === 'ArrowRight') to(f - 1); else if (e.key === 'Enter') go(); else if (e.key === 'Escape'){ to(0); go(); } }, true);
-  addEventListener('resize', () => { if (!L.hidden) layout(); });
-  const open = () => { to(0); L.hidden = false; };
+    if (e.key === 'ArrowLeft') to(f + 1); else if (e.key === 'ArrowRight') to(f - 1); else if (e.key === 'Enter') go();
+    else if (e.key === 'Escape'){ setTab('adwaa'); go(); } }, true);
+  addEventListener('resize', () => { if (!L.hidden) setTab(tab, f); });
+  const open = () => { L.hidden = false; const t = home(); setTab(t, t === HER ? Math.max(0, seasonal) : 0); };
   return {open, get shown(){ return !L.hidden; }};
 })();
 
