@@ -70,6 +70,18 @@
     "cover": "archive/2024-q1/pages/p01.webp"
   },
   {
+    "id": "adwaaha-2025",
+    "number": 2025,
+    "label": "أضواؤها · يوم المرأة البحرينية 2025",
+    "path": "archive/adwaaha-2025/",
+    "cover": "archive/adwaaha-2025/pages/p01.webp",
+    "series": "adwaaha",
+    "feature": {
+      "from": "2025-11-25",
+      "to": "2025-12-31"
+    }
+  },
+  {
     "id": "adwaaha-2024",
     "number": 2024,
     "label": "أضواؤها · يوم المرأة البحرينية 2024",

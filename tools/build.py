@@ -266,7 +266,8 @@ def main():
     log(f'الصور القابلة للفتح: {nph} (منها {nor} من الملفات الأصلية)')
     # brand + issue assets
     shutil.rmtree(PUB / 'assets', ignore_errors=True)
-    if (ROOT / 'issue' / 'assets').exists(): shutil.copytree(ROOT / 'issue' / 'assets', PUB / 'assets')
+    if (ROOT / 'issue' / 'assets').exists():   # the intro film belongs to the current issue only
+        shutil.copytree(ROOT / 'issue' / 'assets', PUB / 'assets', ignore=shutil.ignore_patterns('intro*') if archived else None)
     (PUB / 'assets').mkdir(exist_ok=True); shutil.copy(TOOLS / 'brand' / 'adwaa-logo.svg', PUB / 'assets' / 'adwaa-logo.svg')
     nlinks = sum(len(p['links']) for p in pages)
     nwords = sum(len(p['words']) for p in pages)
