@@ -332,7 +332,7 @@ def main():
     if archive: log(f'الأعداد السابقة: {len(archive)}')
     issue = {'id': cfg['id'], 'series': series(cfg), 'number': cfg['number'], 'label': cfg['label'], 'topics': topics, 'narration': narration, 'sections': cfg.get('sections') or [],
              'feedback_url': cfg.get('feedback_url') or '', 'guess': g or None, 'archive': [] if archived else archive,
-             'archived': archived, 'intro': cfg.get('intro') or '', 'intro_poster': cfg.get('intro_poster') or '', 'cover': f'pages/p01.webp'}
+             'archived': archived, 'single': bool(cfg.get('single')), 'intro': cfg.get('intro') or '', 'intro_poster': cfg.get('intro_poster') or '', 'cover': f'pages/p01.webp'}
     data = {'w': W, 'h': H, 'pages': pages}
     tpl = (TOOLS / 'template.html').read_text(encoding='utf-8')
     lib = (TOOLS / 'vendor' / 'page-flip.patched.js').read_text(encoding='utf-8')

@@ -7,11 +7,35 @@
   "pdf": "issue/archive/adwaaha-2024/Adwaaha-2024.pdf",
   "download_name": "Adwaaha-2024.pdf",
   "site_url": "https://lmra-adhwa-magazine.vercel.app",
-  "feature": {"from": "2024-11-25", "to": "2024-12-31"},
+  "feature": {
+    "from": "2024-11-25",
+    "to": "2024-12-31"
+  },
   "topics": [
-    {"id": "patron-word", "s": 2, "e": 2, "t": "كلمة صاحبة السمو الملكي رئيسة المجلس الأعلى للمرأة"},
-    {"id": "chair-word", "s": 3, "e": 3, "t": "كلمة رئيس لجنة تكافؤ الفرص"},
-    {"id": "stats", "s": 4, "e": 4, "t": "إحصائياتنا"},
-    {"id": "achievements", "s": 5, "e": 7, "t": "إنجازاتها"}
-  ]
+    {
+      "id": "patron-word",
+      "s": 2,
+      "e": 2,
+      "t": "كلمة صاحبة السمو الملكي رئيسة المجلس الأعلى للمرأة"
+    },
+    {
+      "id": "chair-word",
+      "s": 3,
+      "e": 3,
+      "t": "كلمة رئيس لجنة تكافؤ الفرص"
+    },
+    {
+      "id": "stats",
+      "s": 4,
+      "e": 4,
+      "t": "إحصائياتنا"
+    },
+    {
+      "id": "achievements",
+      "s": 5,
+      "e": 7,
+      "t": "إنجازاتها"
+    }
+  ],
+  "single": true
 }

@@ -980,7 +980,7 @@ function layout(){
   setRails();
   const compact = setCompact();
   const st = $('#stage').getBoundingClientRect();
-  const portrait = st.width < st.height * 1.02 || st.width < 560;
+  const portrait = !!CFG.single || st.width < st.height * 1.02 || st.width < 560;   // "single": one page at a time on every screen
   const imm = document.body.classList.contains('immersive');
   const sidePad = portrait ? (imm ? 0 : 24) : (compact || TOUCH ? 24 : 150);
   const availW = st.width - sidePad, availH = st.height - (imm ? 0 : compact ? 12 : 30);
